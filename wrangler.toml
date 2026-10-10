@@ -1,12 +1,8 @@
 name = "ap-lms"
-pages_build_output_dir = "."
+main = "src/index.js"
 compatibility_date = "2024-01-01"
 
 [[d1_databases]]
 binding = "AP_LMS_DB"
-database_name = "AP_LMS_DB"
+database_name = "ap-lms-db"
 database_id = "ba5f97e3-db0f-44b6-b602-22d0c8d57723"
-
-[[r2_buckets]]
-binding = "AP_LMS_R2"
-bucket_name = "AP_LMS_R2"
