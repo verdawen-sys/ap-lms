@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Admin - Academic Priority</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="bg-black text-white p-3 font-bold flex justify-between">
+<span>AP ADMIN PANEL V3 FINAL</span>
+<span class="text-xs">SD4-SD6 | SMP7-SMP9 | SMA10-12 | TKA | TARUNA</span>
+</div>
+
+<div class="max-w-6xl mx-auto p-4">
+<div class="flex gap-2 mb-4">
+<button onclick="showTab('siswa')" id="tabSiswa" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">1. Siswa Berbayar</button>
+<button onclick="showTab('paket')" id="tabPaket" class="px-4 py-2 bg-white border rounded">2. Paket & Motivasi</button>
+<button onclick="showTab('soal')" id="tabSoal" class="px-4 py-2 bg-white border rounded">3. Soal Unlimited</button>
+</div>
+
+<!-- TAB SISWA -->
+<div id="viewSiswa">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">Tambah / Edit Siswa (Bimbel Berbayar)</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+<input id="sUsername" placeholder="Username (misal: tka_andi)" class="border p-2 rounded">
+<input id="sPassword" placeholder="Password" class="border p-2 rounded">
+<input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded">
+<input id="sWA" placeholder="No WA" class="border p-2 rounded">
+</div>
+<div class="mt-3">
+<div class="text-sm font-bold mb-1">Pilih Paket Aktif (Centang paket yang sudah dibeli siswa ini):</div>
+<div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm grid grid-cols-1 md:grid-cols-2 gap-1">Loading paket...</div>
+</div>
+<input type="hidden" id="sId">
+<div class="flex gap-2 mt-3">
+<button onclick="saveSiswa()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Siswa</button>
+<button onclick="resetFormSiswa()" class="border px-4 py-2 rounded">Batal</button>
+</div>
+</div>
+<div class="bg-white p-4 rounded shadow">
+<h3 class="font-bold mb-2">Daftar Siswa</h3>
+<div id="listSiswa" class="text-sm">Loading...</div>
+</div>
+</div>
+
+<script>
+let allPaketGlobal=[];
+function showTab(t){
+ document.getElementById('viewSiswa').classList.add('hidden');
+ document.getElementById('viewPaket').classList.add('hidden');
+ document.getElementById('viewSoal').classList.add('hidden');
+ document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('hidden');
+ ['tabSiswa','tabPaket','tabSoal'].forEach(id=>document.getElementById(id).className='px-4 py-2 bg-white border rounded');
+ document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
+ if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal();
+}
+async function loadPaketCheck(){
+ let res=await fetch('/api/siswa?action=paket_list');
+ allPaketGlobal=await res.json();
+ let html='';
+ allPaketGlobal.forEach(p=>{
+   html+=`<label class="flex gap-2 items-center"><input type="checkbox" value="${p.id}" class="paketCheck"> ${p.kelas} - ${p.mapel} - ${p.nama} (${p.jenis})</label>`;
+ });
+ document.getElementById('checkPaket').innerHTML=html||'Belum ada paket, buat paket dulu di Tab 2';
+}
+async function loadSiswa(){
+ let res=await fetch('/api/siswa?action=list');
+ let data=await res.json();
+ let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Paket Aktif</th><th class="border p-1">Aksi</th></tr>';
+ data.forEach(s=>{
+   let pa='';
+   try{let arr=JSON.parse(s.paket_aktif||'[]'); pa=arr.length+' paket';}catch(e){pa=s.paket_aktif;}
+   html+=`<tr><td class="border p-1">${s.username}</td><td class="border p-1">${s.nama}<br><span class="text-xs text-gray-500">${s.last_login||''}</span></td><td class="border p-1 text-xs">${pa}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`;
+ });
+ html+='</table>';
+ document.getElementById('listSiswa').innerHTML=html;
+}
+async function saveSiswa(){
+ let paketAktif=[];
+ document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value)));
+ let body={action: document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif};
+ let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ let d=await res.json();
+ if(d.ok){alert('Siswa disimpan'); resetFormSiswa(); loadSiswa();} else alert(d.msg);
+}
+function resetFormSiswa(){document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>document.getElementById(id).value=''); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false);}
+async function editSiswa(id){
+ let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id);
+ document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa;
+ try{let arr=JSON.parse(s.paket_aktif||'[]'); document.querySelectorAll('.paketCheck').forEach(c=>{c.checked=arr.includes(parseInt(c.value))||arr.includes(c.value.toString());});}catch(e){}
+}
+async function delSiswa(id){if(!confirm('Hapus siswa?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
+loadPaketCheck(); loadSiswa();
+</script>
+<!-- TAB PAKET -->
+<div id="viewPaket" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">Buat Paket Baru - Kelas SD/SMP/SMA/TKA/TARUNA + Motivasi Custom</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+<select id="pKelas" class="border p-2 rounded">
+<option value="">Pilih Kelas</option>
+<optgroup label="SD"><option>SD4</option><option>SD5</option><option>SD6</option></optgroup>
+<optgroup label="SMP"><option>SMP7</option><option>SMP8</option><option>SMP9</option></optgroup>
+<optgroup label="SMA"><option>SMA10</option><option>SMA11</option><option>SMA12</option></optgroup>
+<optgroup label="KHUSUS"><option>TKA</option><option>TARUNA</option></optgroup>
+</select>
+<div class="flex gap-1">
+<select id="pMapel" class="border p-2 rounded w-full"><option value="">Pilih Mapel</option></select>
+<button onclick="addMapel()" class="bg-green-600 text-white px-2 rounded text-sm">+ Mapel</button>
+</div>
+<div class="flex gap-1">
+<select id="pBab" class="border p-2 rounded w-full"><option value="">Pilih Bab</option></select>
+<button onclick="addBab()" class="bg-green-600 text-white px-2 rounded text-sm">+ Bab</button>
+</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+<select id="pJenis" class="border p-2 rounded">
+<option value="Latihan">Latihan (Santai, Tanpa Timer, Bahas Langsung)</option>
+<option value="UH">UH - Ulangan Harian</option>
+<option value="Evaluasi">Evaluasi</option>
+<option value="Tryout">Tryout (Wajib Timer + Ranking)</option>
+<option value="UAS">UAS</option>
+<option value="OSP">OSP (Tanpa Pembahasan)</option>
+</select>
+<input id="pNama" placeholder="Nama Paket: Latihan1 / Tryout TKA 1" class="border p-2 rounded">
+<input id="pWaktu" type="number" placeholder="Waktu [___] menit (kosong=tanpa timer)" class="border p-2 rounded">
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+<select id="pBahas" class="border p-2 rounded">
+<option value="langsung">Mode: Langsung bahas tiap soal (untuk Latihan)</option>
+<option value="akhir">Tampilkan pembahasan di akhir</option>
+<option value="tanpa">Tanpa pembahasan (hanya nilai)</option>
+</select>
+<input id="pKode" placeholder="Kode Akses Paket (opsional)" class="border p-2 rounded">
+<input id="pKKM" type="number" placeholder="KKM 75" value="75" class="border p-2 rounded">
+</div>
+
+<!-- BOX MOTIVASI CUSTOM - SARAN TERAKHIR -->
+<div class="border-2 border-orange-300 p-3 rounded bg-orange-50">
+<label class="font-bold text-sm text-orange-700">🎯 Box Pesan Motivasi Custom (Request Kakak - Beda tiap Mapel/Kelas/Jenis):</label>
+<textarea id="pMotivasi" placeholder="Contoh: Semangat pejuang TKA! IPA itu logika, bukan hafalan. / Untuk SD: Hebat! Latihan lagi yuk... / Kosongkan = otomatis random sesuai Kelas" class="w-full border p-2 rounded mt-1" rows="2"></textarea>
+<p class="text-xs text-gray-600 mt-1">Jika dikosongkan, sistem otomatis: SD=Hebat latihan lagi, SMA12=Mental juara, TKA=Sedikit lagi PTN impian, TARUNA=Semangat calon perwira!</p>
+</div>
+
+<button onclick="savePaket()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Paket</button>
+</div>
+
+<div class="bg-white p-4 rounded shadow">
+<h3 class="font-bold mb-2">Daftar Paket</h3>
+<div id="listPaket" class="text-sm">Loading...</div>
+</div>
+</div>
+
+<script>
+let manifestItems=[];
+async function loadManifest(){
+ let res=await fetch('/api/manifest');
+ let data=await res.json();
+ manifestItems=data.items||[];
+ // Isi Mapel & Bab berdasarkan Kelas
+ let kelas=document.getElementById('pKelas').value;
+ let mapelSet=[...new Set(manifestItems.filter(i=>!kelas||i.kelas==kelas).map(i=>i.mapel))];
+ let babSet=[...new Set(manifestItems.filter(i=>!kelas||i.kelas==kelas).map(i=>i.bab))];
+ // Tambah default
+ let defaultMapel=["Matematika","IPA","IPS","Bahasa Indonesia","Bahasa Inggris","Fisika","Kimia","Biologi","TKA Matematika","TKA Saintek","TARUNA Akademik"];
+ let allMapel=[...new Set([...defaultMapel,...mapelSet])];
+ document.getElementById('pMapel').innerHTML='<option value="">Pilih Mapel</option>'+allMapel.map(m=>`<option>${m}</option>`).join('');
+ document.getElementById('pBab').innerHTML='<option value="">Pilih Bab</option>'+babSet.map(b=>`<option>${b}</option>`).join('')+'<option value="__baru">-- Bab Baru --</option>';
+ loadPaketList();
+}
+async function addMapel(){
+ let nama=prompt('Nama Mapel baru (misal: Informatika, TKA Literasi):');
+ if(!nama) return;
+ let kelas=document.getElementById('pKelas').value||'SMA10';
+ await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kelas:kelas,mapel:nama,bab:'Umum'})});
+ alert('Mapel '+nama+' ditambahkan!'); loadManifest();
+}
+async function addBab(){
+ let nama=prompt('Nama Bab baru (misal: Bab2 Sistem Pencernaan):');
+ if(!nama) return;
+ let kelas=document.getElementById('pKelas').value||'SMA10';
+ let mapel=document.getElementById('pMapel').value||'Umum';
+ await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kelas:kelas,mapel:mapel,bab:nama})});
+ alert('Bab '+nama+' ditambahkan!'); loadManifest();
+}
+document.getElementById('pKelas').addEventListener('change',loadManifest);
+
+async function savePaket(){
+ let body={action:'add_paket', kelas:document.getElementById('pKelas').value, mapel:document.getElementById('pMapel').value, bab:document.getElementById('pBab').value, jenis:document.getElementById('pJenis').value, nama:document.getElementById('pNama').value, waktu:parseInt(document.getElementById('pWaktu').value)||0, pembahasan:document.getElementById('pBahas').value, kode_akses:document.getElementById('pKode').value, motivasi:document.getElementById('pMotivasi').value};
+ if(!body.kelas||!body.mapel||!body.nama){alert('Lengkapi Kelas Mapel Nama Paket'); return;}
+ let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ let d=await res.json();
+ if(d.ok){alert('Paket disimpan ID '+d.id); loadPaketList(); loadPaketCheck();}
+}
+async function loadPaketList(){
+ let res=await fetch('/api/siswa?action=paket_list');
+ let data=await res.json();
+ allPaketGlobal=data;
+ let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">ID</th><th class="border p-1">Kelas/Mapel/Bab</th><th class="border p-1">Paket</th><th class="border p-1">Motivasi</th><th class="border p-1">Aksi</th></tr>';
+ data.forEach(p=>{
+   html+=`<tr><td class="border p-1">${p.id}</td><td class="border p-1 text-xs">/${p.kelas}/${p.mapel}/${p.bab}</td><td class="border p-1">${p.nama}<br><span class="text-xs">${p.jenis} ${p.waktu? p.waktu+'m':''}</span></td><td class="border p-1 text-xs">${(p.motivasi||'').substring(0,30)}</td><td class="border p-1"><button onclick="delPaket(${p.id})" class="text-red-600">Hapus</button></td></tr>`;
+ });
+ html+='</table>';
+ document.getElementById('listPaket').innerHTML=html;
+}
+async function delPaket(id){if(!confirm('Hapus paket & semua soalnya?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})}); loadPaketList();}
+</script>
+
+<!-- TAB SOAL -->
+<div id="viewSoal" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">Form Soal Lengkap - Unlimited + Simpan & Tambah Lagi</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+<select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select>
+<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()">
+<option value="pg_tunggal">PG Tunggal (A-D/E, 1 kunci - radio)</option>
+<option value="pg_kompleks">PG Kompleks (Multi kunci B+C - checkbox) - FIX</option>
+<option value="benar_salah">Benar Salah</option>
+<option value="menjodohkan">Menjodohkan (1-A,2-C,3-B) - FIX</option>
+<option value="isian">Isian Singkat</option>
+<option value="essay">Essay</option>
+</select>
+</div>
+
+<textarea id="sPertanyaan" placeholder="Tulis pertanyaan... Support KaTeX $x^2$ dan Arab RTL" class="w-full border p-2 rounded h-24"></textarea>
+<div class="flex gap-2 my-2">
+<input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm">
+<span class="text-xs text-gray-500">Upload gambar soal ke R2 (bukan base64)</span>
+</div>
+
+<!-- OPSI DINAMIS -->
+<div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div>
+
+<div class="mt-3">
+<label class="text-sm font-bold">Pembahasan:</label>
+<textarea id="sPembahasan" placeholder="Pembahasan akan muncul di box hijau setelah terkunci" class="w-full border p-2 rounded h-16"></textarea>
+</div>
+
+<div class="flex gap-2 mt-3">
+<button onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Soal</button>
+<button onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Simpan & Tambah Soal Lagi (Unlimited)</button>
+<span id="soalMsg" class="text-sm"></span>
+</div>
+</div>
+
+<div class="bg-white p-4 rounded shadow">
+<h3 class="font-bold mb-2">Daftar Soal di Paket Terpilih</h3>
+<div id="listSoal" class="text-sm">Pilih paket dulu</div>
+</div>
+</div>
+</div>
+
+<script>
+async function loadPaketForSoal(){
+ let res=await fetch('/api/siswa?action=paket_list');
+ let data=await res.json();
+ document.getElementById('sPaket').innerHTML=data.map(p=>`<option value="${p.id}">[${p.id}] ${p.kelas}/${p.mapel}/${p.bab} - ${p.nama} (${p.jenis})</option>`).join('');
+ loadSoalList();
+}
+document.getElementById('sPaket').addEventListener('change',loadSoalList);
+
+function changeTipe(){
+ let tipe=document.getElementById('sTipe').value;
+ let c=document.getElementById('opsiContainer');
+ if(tipe==='pg_tunggal'){
+   c.innerHTML=`Opsi PG Tunggal (1 kunci radio):
+   ${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="radio" name="kunci" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}`;
+ } else if(tipe==='pg_kompleks'){
+   c.innerHTML=`PG Kompleks - Centang lebih dari 1 (FIX bug kemarin):
+   ${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="checkbox" name="kunci_multi" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}
+   <p class="text-xs text-green-600">Contoh kunci: Centang B dan C untuk jawaban B+C</p>`;
+ } else if(tipe==='benar_salah'){
+   c.innerHTML=`<div class="flex gap-2"><input type="radio" name="kunci" value="0"> Benar <input type="radio" name="kunci" value="1"> Salah</div><p class="text-xs">Kunci: 0=Benar,1=Salah</p>`;
+ } else if(tipe==='menjodohkan'){
+   c.innerHTML=`Menjodohkan - Form Khusus (FIX):
+   <div class="grid grid-cols-2 gap-2">
+   <div>${[1,2,3].map(i=>`<div class="flex gap-1 mb-1"><span>${i}.</span><input id="kiri_${i}" placeholder="Kiri ${i}" class="border p-1 rounded w-full"></div>`).join('')}</div>
+   <div>${['A','B','C'].map(k=>`<div class="flex gap-1 mb-1"><span>${k}.</span><input id="kanan_${k}" placeholder="Kanan ${k}" class="border p-1 rounded w-full"></div>`).join('')}</div>
+   </div>
+   Kunci Pasangan (1-A,2-C,3-B):<input id="kunci_jodoh" placeholder="1-A,2-C,3-B" class="border p-1 rounded w-full">
+   `;
+ } else if(tipe==='isian'){
+   c.innerHTML=`Isian Singkat - Kunci Jawaban:<input id="kunci_isian" placeholder="Jawaban benar (misal: fotosintesis)" class="border p-2 rounded w-full">`;
+ } else {
+   c.innerHTML=`Essay - Kunci / Rubrik:<textarea id="kunci_essay" placeholder="Kunci jawaban essay" class="w-full border p-1 rounded"></textarea>`;
+ }
+}
+changeTipe();
+
+async function saveSoal(tambahLagi){
+ let paket_id=document.getElementById('sPaket').value;
+ let tipe=document.getElementById('sTipe').value;
+ let pertanyaan=document.getElementById('sPertanyaan').value;
+ let pembahasan=document.getElementById('sPembahasan').value;
+ if(!paket_id||!pertanyaan){alert('Paket & Pertanyaan wajib'); return;}
+ let opsi=[], kunci=[];
+ if(tipe==='pg_tunggal'){
+   for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); if(v&&v.value) opsi.push(v.value); else if(i<2) opsi.push('');}
+   let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];
+ } else if(tipe==='pg_kompleks'){
+   for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); opsi.push(v? v.value:'');}
+   document.querySelectorAll('input[name="kunci_multi"]:checked').forEach(c=>kunci.push(parseInt(c.value)));
+ } else if(tipe==='benar_salah'){opsi=["Benar","Salah"]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];}
+ else if(tipe==='menjodohkan'){
+   let kiri=[], kanan=[];
+   for(let i=1;i<=3;i++) kiri.push(document.getElementById('kiri_'+i).value);
+   for(let k of ['A','B','C']) kanan.push(document.getElementById('kanan_'+k).value);
+   opsi=[...kiri,...kanan]; kunci=[document.getElementById('kunci_jodoh').value];
+ } else if(tipe==='isian'){kunci=[document.getElementById('kunci_isian').value];}
+ else {kunci=[document.getElementById('kunci_essay').value];}
+
+ let fd=new FormData();
+ fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
+ let file=document.getElementById('sGambar').files[0]; if(file) fd.append('gambar_file',file);
+ let res=await fetch('/api/soal',{method:'POST',body:fd});
+ let d=await res.json();
+ if(d.ok){
+   document.getElementById('soalMsg').innerText='Soal tersimpan ✓ Total soal di paket ini bertambah';
+   loadSoalList();
+   if(tambahLagi){
+     // Reset form untuk soal berikutnya - Tetap di paket yang sama (request Kakak)
+     document.getElementById('sPertanyaan').value=''; document.getElementById('sPembahasan').value=''; document.getElementById('sGambar').value='';
+     for(let i=0;i<5;i++){let el=document.getElementById('opsi_'+i); if(el) el.value='';}
+     // Fokus lagi ke pertanyaan
+     document.getElementById('sPertanyaan').focus();
+   } else {
+     // Reset total
+     document.getElementById('sPertanyaan').value='';
+   }
+ } else {alert('Gagal simpan');}
+}
+async function loadSoalList(){
+ let pid=document.getElementById('sPaket').value;
+ if(!pid) return;
+ let res=await fetch('/api/soal?paket_id='+pid);
+ let data=await res.json();
+ document.getElementById('listSoal').innerHTML=data.length+' soal di paket ini (Max unlimited, saran Tryout TKA max 80 biar HP tidak lemot):<br>'+data.map((s,i)=>`${i+1}. ${s.pertanyaan.substring(0,80)}... [${s.tipe}]`).join('<br>');
+}
+</script>
+</body>
+</html>
