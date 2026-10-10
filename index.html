@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Priority - LMS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+.locked{pointer-events:none;opacity:0.7}
+.opt-selected{border-color:#3b82f6!important;background:#eff6ff!important}
+.opt-correct{border-color:#16a34a!important;background:#dcfce7!important}
+.opt-wrong{border-color:#ef4444!important;background:#fee2e2!important}
+</style>
+</head>
+<body class="bg-[#f8fafc] min-h-screen">
+<!-- TOP BAR -->
+<div class="bg-[#ff8c00] text-white p-3 font-bold flex justify-between">
+<span>Academic Priority</span>
+<span id="topUser" class="text-sm"></span>
+</div>
+
+<!-- LOGIN VIEW -->
+<div id="loginView" class="max-w-md mx-auto mt-20 p-6 bg-white rounded-xl shadow">
+<h2 class="text-xl font-bold mb-4">Login Siswa AP</h2>
+<input id="lUser" placeholder="Username" class="w-full border p-3 rounded mb-2">
+<input id="lPass" type="password" placeholder="Password" class="w-full border p-3 rounded mb-3">
+<button onclick="doLogin()" class="w-full bg-orange-500 text-white p-3 rounded font-bold">MASUK</button>
+<p id="loginMsg" class="text-sm text-red-500 mt-2"></p>
+<p class="text-xs mt-4 text-gray-500">Bimbel Berbayar: Login untuk lihat paket yang sudah dibeli</p>
+</div>
+
+<!-- HOME VIEW -->
+<div id="homeView" class="hidden max-w-4xl mx-auto p-4">
+<div class="flex justify-between items-center mb-4">
+<h2 id="welcome" class="font-bold"></h2>
+<button onclick="doLogout()" class="text-sm border px-3 py-1 rounded">Ganti Kelas / Logout</button>
+</div>
+<div id="paketList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+</div>
+
+<!-- QUIZ VIEW - SESUAI GAMBAR -->
+<div id="quizView" class="hidden max-w-3xl mx-auto p-0 md:p-4">
+<!-- Breadcrumb + Progress -->
+<div class="bg-white p-4 border-b">
+<div id="breadcrumb" class="text-sm text-gray-500">/AP8/IPA/Bab2 Sistem Pencernaan/Latihan1/</div>
+<div class="flex justify-between items-center mt-1">
+<span id="qCounter" class="font-bold text-orange-600">Soal 18/20</span>
+<span id="timer" class="text-sm"></span>
+</div>
+<div class="w-full h-2 bg-gray-200 rounded mt-2">
+<div id="progressBar" class="h-2 bg-blue-600 rounded" style="width:90%"></div>
+</div>
+</div>
+
+<!-- Soal -->
+<div class="bg-white p-5">
+<div id="qText" class="font-medium mb-4 text-[15px]"></div>
+<img id="qImg" class="hidden max-w-full mb-3 rounded border">
+<div id="qOpsi" class="space-y-2"></div>
+
+<!-- BOX TERKUNCI + PEMBAHASAN - MUNCUL SETELAH KLIK -->
+<div id="lockedBox" class="hidden mt-4 p-3 bg-green-50 border border-green-200 rounded">
+<div id="lockedInfo" class="text-sm font-bold text-green-700">Terkunci: B - Kunci B</div>
+<div id="pembahasanText" class="text-sm mt-1">Pembahasan: Diare -> dehidrasi.</div>
+</div>
+</div>
+
+<!-- Navigasi Sebelumnya Lanjut -->
+<div class="bg-white p-4 flex justify-between border-t">
+<button onclick="prevQ()" class="px-4 py-2 border rounded">← Sebelumnya</button>
+<button id="nextBtn" onclick="nextQ()" class="px-6 py-2 bg-blue-600 text-white rounded">Lanjut →</button>
+</div>
+
+<!-- Bar Nomor 1-20 Bisa Klik -->
+<div class="bg-white p-4 mt-2">
+<div id="numberBar" class="flex flex-wrap gap-2"></div>
+</div>
+</div>
+
+<!-- NILAI AKHIR VIEW - SESUAI GAMBAR 5 -->
+<div id="resultView" class="hidden max-w-md mx-auto mt-10 p-6 bg-white rounded-xl text-center shadow">
+<div class="text-5xl mb-2">💪</div>
+<div id="scoreBig" class="text-6xl font-bold">10</div>
+<div id="scoreDetail" class="text-sm text-gray-600 mt-1">2 benar dari 20 soal • KKM 75</div>
+<div class="text-left text-sm bg-gray-50 p-3 rounded mt-4 space-y-1">
+<div>Nama: <b id="rNama"></b></div>
+<div>Kelas: <b id="rKelas"></b></div>
+<div>Mapel: <b id="rMapel"></b></div>
+<div>Bab: <b id="rBab"></b></div>
+</div>
+<div class="mt-2 text-green-600 text-sm font-bold">Nilai terkirim ✓</div>
+<div id="motivasiBox" class="mt-3 text-xs text-gray-500 italic p-2 border rounded">Belajar bisa diulang terus sampai paham...</div>
+
+<button onclick="ulangAcak()" class="w-full mt-4 bg-orange-500 text-white p-3 rounded font-bold">🔄 Ulangi Latihan Ini (Acak Soal)</button>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<button onclick="goHome()" class="border p-2 rounded text-sm">📚 Bab Lain</button>
+<button onclick="goHome()" class="border p-2 rounded text-sm">🎒 Ganti Mapel</button>
+</div>
+<button onclick="doLogout()" class="w-full mt-2 text-sm text-gray-500">🚪 Ganti Kelas / Logout</button>
+</div>
+
+<script>
+// GLOBAL STATE
+let siswa=null, paketAktif=null, soalList=[], curIdx=0, jawaban=[], locked=[], startTime=null, timerInt=null;
+const MOTIVASI_DEFAULT={
+ SD:["Hebat! Latihan lagi yuk biar makin jago","Pintar! Satu soal lagi?"],
+ SMP:["Keren! Konsisten adalah kunci juara","Luar biasa, lanjutkan!"],
+ SMA:["Mental juara! Terus asah kemampuanmu","Fokus! Kamu dekat dengan target"],
+ TKA:["Sedikit lagi PTN impian di depan mata!","Pejuang TKA, kamu keren!"],
+ TARUNA:["Semangat calon perwira! Disiplin kunci lolos","Terus berjuang, seragam menantimu!"]
+};
+
+function getMotivasi(paket){
+ if(paket.motivasi && paket.motivasi.trim()!="") return paket.motivasi;
+ let k = paket.kelas.includes("TKA")?"TKA":paket.kelas.includes("TARUNA")?"TARUNA":paket.kelas.startsWith("SD")?"SD":paket.kelas.startsWith("SMP")?"SMP":"SMA";
+ let arr = MOTIVASI_DEFAULT[k]||MOTIVASI_DEFAULT.SMA;
+ return arr[Math.floor(Math.random()*arr.length)] + " - " + paket.mapel;
+}
+
+// LOGIN
+async function doLogin(){
+ let u=document.getElementById('lUser').value.trim();
+ let p=document.getElementById('lPass').value.trim();
+ if(!u||!p) return;
+ let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:u,password:p})});
+ let data=await res.json();
+ if(!data.ok){document.getElementById('loginMsg').innerText=data.msg||'Gagal login'; return;}
+ siswa=data.siswa;
+ localStorage.setItem('ap_siswa',JSON.stringify(siswa));
+ initHome();
+}
+function doLogout(){localStorage.removeItem('ap_siswa');location.reload();}
+function initHome(){
+ let s=localStorage.getItem('ap_siswa');
+ if(s){siswa=JSON.parse(s); document.getElementById('loginView').classList.add('hidden'); document.getElementById('homeView').classList.remove('hidden'); document.getElementById('welcome').innerText="Halo, "+siswa.nama; document.getElementById('topUser').innerText=siswa.nama; loadPaket();}
+ else {document.getElementById('loginView').classList.remove('hidden');}
+}
+async function loadPaket(){
+ let res=await fetch('/api/siswa?action=paket_list');
+ let allPaket=await res.json();
+ let aktif=[];
+ try{aktif=JSON.parse(siswa.paket_aktif||'[]');}catch(e){aktif=[];}
+ // Filter hanya paket yang dibeli
+ let filtered = aktif.length>0? allPaket.filter(p=>aktif.includes(p.id) || aktif.includes(p.id.toString())) : allPaket;
+ // Jika siswa baru tanpa paket, tampil semua (untuk testing)
+ if(filtered.length==0 && aktif.length==0) filtered=allPaket;
+ let html="";
+ filtered.forEach(p=>{
+ html+=`<div class="bg-white p-4 rounded border hover:shadow cursor-pointer" onclick="startPaket(${p.id})">
+ <div class="text-xs text-orange-600">/${p.kelas}/${p.mapel}/${p.bab}/${p.jenis}/</div>
+ <div class="font-bold">${p.nama}</div>
+ <div class="text-xs text-gray-500">${p.jenis} • ${p.waktu? p.waktu+' menit':'Tanpa Timer'} • ${p.pembahasan}</div>
+ </div>`;
+ });
+ document.getElementById('paketList').innerHTML=html||'<div class="text-sm text-gray-500">Belum ada paket aktif. Hubungi admin.</div>';
+}
+
+async function startPaket(id){
+ let res=await fetch('/api/siswa?action=paket_list');
+ let all=await res.json();
+ paketAktif=all.find(p=>p.id==id);
+ if(!paketAktif) return;
+ // Ambil soal
+ let resSoal=await fetch('/api/soal?paket_id='+id);
+ soalList=await resSoal.json();
+ if(soalList.length==0){alert('Paket ini belum ada soal');return;}
+ // Acak soal & opsi untuk Latihan (request Kakak: Ulangi = acak otomatis)
+ if(paketAktif.jenis==='Latihan'){
+   soalList = shuffle(soalList);
+   soalList.forEach(s=>{
+     try{
+       let opsi=JSON.parse(s.opsi);
+       let kunci=JSON.parse(s.kunci);
+       // Acak opsi tapi jaga kunci
+       let paired=opsi.map((o,i)=>({o,i, isKunci: kunci.includes(i) || kunci.includes(String.fromCharCode(65+i)) || kunci.includes(o)}));
+       // Simpler: shuffle index
+       let idx=[0,1,2,3].slice(0,opsi.length);
+       idx=shuffle(idx);
+       let newOpsi=idx.map(i=>opsi[i]);
+       // Recalc kunci baru
+       let newKunci=[];
+       idx.forEach((oldIdx,newPos)=>{
+         if(kunci.includes(oldIdx) || kunci.includes(String.fromCharCode(65+oldIdx))) newKunci.push(newPos);
+       });
+       s.opsi=JSON.stringify(newOpsi);
+       s.kunci=JSON.stringify(newKunci);
+     }catch(e){}
+   });
+ }
+ jawaban=new Array(soalList.length).fill(null);
+ locked=new Array(soalList.length).fill(false);
+ curIdx=0;
+ document.getElementById('homeView').classList.add('hidden');
+ document.getElementById('resultView').classList.add('hidden');
+ document.getElementById('quizView').classList.remove('hidden');
+ if(paketAktif.waktu>0){startTimer(paketAktif.waktu);}
+ renderSoal();
+}
+
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function renderSoal(){
+ let s=soalList[curIdx];
+ document.getElementById('breadcrumb').innerText=`/${paketAktif.kelas}/${paketAktif.mapel}/${paketAktif.bab}/${paketAktif.nama}/`;
+ document.getElementById('qCounter').innerText=`Soal ${curIdx+1}/${soalList.length}`;
+ document.getElementById('progressBar').style.width=((curIdx+1)/soalList.length*100)+'%';
+ document.getElementById('qText').innerHTML=s.pertanyaan;
+ if(s.gambar){document.getElementById('qImg').src='/api/cdn/'+s.gambar; document.getElementById('qImg').classList.remove('hidden');} else {document.getElementById('qImg').classList.add('hidden');}
+ // Opsi
+ let opsi=[];
+ try{opsi=JSON.parse(s.opsi);}catch(e){opsi=[];}
+ let kunci=[];
+ try{kunci=JSON.parse(s.kunci);}catch(e){kunci=[];}
+ let container=document.getElementById('qOpsi');
+ container.innerHTML='';
+ opsi.forEach((o,i)=>{
+   let isSel = jawaban[curIdx]===i || (Array.isArray(jawaban[curIdx]) && jawaban[curIdx].includes(i));
+   let div=document.createElement('div');
+   div.className='border p-3 rounded cursor-pointer flex gap-2 '+(isSel?'opt-selected':'')+(locked[curIdx]?'locked':'');
+   div.innerHTML=`<span class="font-bold">${String.fromCharCode(65+i)}.</span><span>${o}</span>`;
+   div.onclick=()=>selectOpsi(i);
+   container.appendChild(div);
+ });
+ // Locked Box - Sesuai gambar: Langsung terkunci + pembahasan
+ if(locked[curIdx]){
+   document.getElementById('lockedBox').classList.remove('hidden');
+   document.getElementById('lockedInfo').innerText=`Terkunci: ${jawaban[curIdx]!==null? String.fromCharCode(65+jawaban[curIdx]) : '-'} - Kunci ${kunci.map(k=>String.fromCharCode(65+k)).join(',')}`;
+   document.getElementById('pembahasanText').innerText='Pembahasan: '+(s.pembahasan||'-');
+   // Warna benar salah
+   let childs=container.children;
+   for(let i=0;i<childs.length;i++){
+     if(kunci.includes(i)) childs[i].classList.add('opt-correct');
+     if(jawaban[curIdx]===i &&!kunci.includes(i)) childs[i].classList.add('opt-wrong');
+   }
+ } else {
+   document.getElementById('lockedBox').classList.add('hidden');
+ }
+ renderNumberBar();
+ document.getElementById('nextBtn').innerText=curIdx==soalList.length-1?'Selesai & Kirim Nilai':'Lanjut →';
+ // KaTeX render
+ if(window.renderMathInElement){renderMathInElement(document.getElementById('quizView'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}]});}
+}
+
+function selectOpsi(i){
+ if(locked[curIdx]) return; // Anti curang ganti jawaban
+ jawaban[curIdx]=i;
+ locked[curIdx]=true; // Langsung kunci - request Kakak
+ // Jika mode pembahasan langsung, langsung tampil
+ if(paketAktif.pembahasan==='langsung' || paketAktif.jenis==='Latihan'){
+   renderSoal();
+ } else {
+   renderSoal();
+ }
+}
+
+function renderNumberBar(){
+ let bar=document.getElementById('numberBar');
+ bar.innerHTML='';
+ soalList.forEach((_,i)=>{
+   let btn=document.createElement('button');
+   let isAnswered=jawaban[i]!==null;
+   let isCur=i===curIdx;
+   btn.className='w-9 h-9 rounded text-sm border '+(isAnswered?'bg-blue-600 text-white':'bg-white')+(isCur?' ring-2 ring-blue-400':'');
+   btn.innerText=i+1;
+   btn.onclick=()=>{curIdx=i; renderSoal();};
+   bar.appendChild(btn);
+ });
+}
+
+function prevQ(){if(curIdx>0){curIdx--; renderSoal();}}
+function nextQ(){
+ if(curIdx<soalList.length-1){curIdx++; renderSoal();}
+ else {submitNilai();}
+}
+
+function startTimer(menit){
+ let total=menit*60;
+ clearInterval(timerInt);
+ timerInt=setInterval(()=>{
+   let m=Math.floor(total/60), s=total%60;
+   document.getElementById('timer').innerText=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+   if(total<=0){clearInterval(timerInt); submitNilai();}
+   total--;
+ },1000);
+}
+
+async function submitNilai(){
+ clearInterval(timerInt);
+ let benar=0;
+ soalList.forEach((s,i)=>{
+   try{
+     let kunci=JSON.parse(s.kunci);
+     if(jawaban[i]!==null && kunci.includes(jawaban[i])) benar++;
+   }catch(e){}
+ });
+ let skor=Math.round(benar/soalList.length*100);
+ // Kirim ke D1
+ await fetch('/api/nilai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+   username:siswa.username, nama:siswa.nama, kelas:paketAktif.kelas, mapel:paketAktif.mapel, bab:paketAktif.bab,
+   paket_id:paketAktif.id, paket_nama:paketAktif.nama, jenis:paketAktif.jenis, skor:skor, benar:benar, total:soalList.length, jawaban:jawaban
+ })});
+ // Tampilkan Hasil - Sesuai Gambar 5
+ document.getElementById('quizView').classList.add('hidden');
+ document.getElementById('resultView').classList.remove('hidden');
+ document.getElementById('scoreBig').innerText=skor;
+ document.getElementById('scoreDetail').innerText=`${benar} benar dari ${soalList.length} soal • KKM 75`;
+ document.getElementById('rNama').innerText=siswa.nama;
+ document.getElementById('rKelas').innerText=paketAktif.kelas;
+ document.getElementById('rMapel').innerText=paketAktif.mapel;
+ document.getElementById('rBab').innerText=paketAktif.bab;
+ document.getElementById('motivasiBox').innerText=getMotivasi(paketAktif);
+}
+
+function ulangAcak(){ // Tombol Ulangi Latihan (Acak Soal) - Request Kakak
+ startPaket(paketAktif.id);
+}
+function goHome(){
+ document.getElementById('quizView').classList.add('hidden');
+ document.getElementById('resultView').classList.add('hidden');
+ document.getElementById('homeView').classList.remove('hidden');
+ loadPaket();
+}
+
+// INIT
+initHome();
+</script>
+</body>
+</html>
