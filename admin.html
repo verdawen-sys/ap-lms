@@ -8,30 +8,29 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
 <div class="bg-black text-white p-3 font-bold flex justify-between">
-<span>AP ADMIN PANEL V3 FINAL</span>
+<span>AP ADMIN PANEL V3 FINAL - FIXED</span>
 <span class="text-xs">SD4-SD6 | SMP7-SMP9 | SMA10-12 | TKA | TARUNA</span>
 </div>
-
 <div class="max-w-6xl mx-auto p-4">
-<div class="flex gap-2 mb-4">
+<div class="flex gap-2 mb-4 flex-wrap">
 <button onclick="showTab('siswa')" id="tabSiswa" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">1. Siswa Berbayar</button>
 <button onclick="showTab('paket')" id="tabPaket" class="px-4 py-2 bg-white border rounded">2. Paket & Motivasi</button>
 <button onclick="showTab('soal')" id="tabSoal" class="px-4 py-2 bg-white border rounded">3. Soal Unlimited</button>
 <button onclick="showTab('nilai')" id="tabNilai" class="px-4 py-2 bg-white border rounded">4. Laporan Nilai</button>
 </div>
 
-<!-- TAB SISWA -->
+<!-- TAB 1 SISWA -->
 <div id="viewSiswa">
 <div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Tambah / Edit Siswa (Bimbel Berbayar)</h3>
+<h3 class="font-bold mb-2">Tambah / Edit Siswa</h3>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-<input id="sUsername" placeholder="Username (misal: tka_andi)" class="border p-2 rounded">
+<input id="sUsername" placeholder="Username" class="border p-2 rounded">
 <input id="sPassword" placeholder="Password" class="border p-2 rounded">
 <input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded">
 <input id="sWA" placeholder="No WA" class="border p-2 rounded">
 </div>
 <div class="mt-3">
-<div class="text-sm font-bold mb-1">Pilih Paket Aktif (Centang paket yang sudah dibeli siswa ini):</div>
+<div class="text-sm font-bold mb-1">Pilih Paket Aktif:</div>
 <div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm grid grid-cols-1 md:grid-cols-2 gap-1">Loading paket...</div>
 </div>
 <input type="hidden" id="sId">
@@ -45,29 +44,10 @@
 <div id="listSiswa" class="text-sm">Loading...</div>
 </div>
 </div>
-
-<script>
-let allPaketGlobal=[];
-function showTab(t){
- try{
-   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai'];
-   for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
-   var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(target) target.classList.remove('hidden');
-   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai'];
-   for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
-   var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
-   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan();
- }catch(err){ console.error(err); }
-}
-rm('Hapus siswa?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
-loadPaketCheck(); loadSiswa();
-</script>
-<!-- TAB PAKET -->
+<!-- TAB 2 PAKET -->
 <div id="viewPaket" class="hidden">
 <div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Buat Paket Baru - Kelas SD/SMP/SMA/TKA/TARUNA + Motivasi Custom</h3>
+<h3 class="font-bold mb-2">Buat Paket Baru</h3>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
 <select id="pKelas" class="border p-2 rounded">
 <option value="">Pilih Kelas</option>
@@ -85,44 +65,160 @@ loadPaketCheck(); loadSiswa();
 <button onclick="addBab()" class="bg-green-600 text-white px-2 rounded text-sm">+ Bab</button>
 </div>
 </div>
-
 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
 <select id="pJenis" class="border p-2 rounded">
-<option value="Latihan">Latihan (Santai, Tanpa Timer, Bahas Langsung)</option>
-<option value="UH">UH - Ulangan Harian</option>
+<option value="Latihan">Latihan</option>
+<option value="UH">UH</option>
 <option value="Evaluasi">Evaluasi</option>
-<option value="Tryout">Tryout (Wajib Timer + Ranking)</option>
+<option value="Tryout">Tryout</option>
 <option value="UAS">UAS</option>
-<option value="OSP">OSP (Tanpa Pembahasan)</option>
+<option value="OSP">OSP</option>
 </select>
-<input id="pNama" placeholder="Nama Paket: Latihan1 / Tryout TKA 1" class="border p-2 rounded">
-<input id="pWaktu" type="number" placeholder="Waktu [___] menit (kosong=tanpa timer)" class="border p-2 rounded">
+<input id="pNama" placeholder="Nama Paket" class="border p-2 rounded">
+<input id="pWaktu" type="number" placeholder="Waktu menit" class="border p-2 rounded">
 </div>
-
 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
 <select id="pBahas" class="border p-2 rounded">
-<option value="langsung">Mode: Langsung bahas tiap soal (untuk Latihan)</option>
-<option value="akhir">Tampilkan pembahasan di akhir</option>
-<option value="tanpa">Tanpa pembahasan (hanya nilai)</option>
+<option value="langsung">Langsung bahas</option>
+<option value="akhir">Bahas di akhir</option>
+<option value="tanpa">Tanpa pembahasan</option>
 </select>
-<input id="pKode" placeholder="Kode Akses Paket (opsional)" class="border p-2 rounded">
+<input id="pKode" placeholder="Kode Akses" class="border p-2 rounded">
 <input id="pKKM" type="number" placeholder="KKM 75" value="75" class="border p-2 rounded">
 </div>
-
-<!-- BOX MOTIVASI CUSTOM -->
 <div class="border-2 border-orange-300 p-3 rounded bg-orange-50">
-<label class="font-bold text-sm text-orange-700">🎯 Box Pesan Motivasi Custom:</label>
-<textarea id="pMotivasi" placeholder="Contoh: Semangat pejuang TKA! / Kosongkan = otomatis" class="w-full border p-2 rounded mt-1" rows="2"></textarea>
+<label class="font-bold text-sm text-orange-700">Pesan Motivasi Custom:</label>
+<textarea id="pMotivasi" placeholder="Kosongkan = otomatis" class="w-full border p-2 rounded mt-1" rows="2"></textarea>
 </div>
-
 <button onclick="savePaket()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Paket</button>
 </div>
-
 <div class="bg-white p-4 rounded shadow">
 <h3 class="font-bold mb-2">Daftar Paket</h3>
 <div id="listPaket" class="text-sm">Loading...</div>
 </div>
 </div>
+
+<!-- TAB 3 SOAL -->
+<div id="viewSoal" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">Form Soal Lengkap + Gambar Opsi A-E</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+<select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select>
+<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()">
+<option value="pg_tunggal">PG Tunggal</option>
+<option value="pg_kompleks">PG Kompleks</option>
+<option value="benar_salah">Benar Salah</option>
+<option value="menjodohkan">Menjodohkan</option>
+<option value="isian">Isian</option>
+<option value="essay">Essay</option>
+</select>
+</div>
+<textarea id="sPertanyaan" placeholder="Tulis pertanyaan..." class="w-full border p-2 rounded h-24"></textarea>
+<div class="flex gap-2 my-2">
+<input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm">
+<span class="text-xs">Gambar soal</span>
+</div>
+<div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div>
+<div class="mt-2 p-2 bg-blue-50 border rounded">
+<label class="text-sm font-bold">Gambar Opsi A-E (NEW):</label>
+<div class="grid grid-cols-5 gap-2 mt-1">
+<div><label class="text-xs">A</label><input type="file" id="gambar_opsi_0" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
+<div><label class="text-xs">B</label><input type="file" id="gambar_opsi_1" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
+<div><label class="text-xs">C</label><input type="file" id="gambar_opsi_2" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
+<div><label class="text-xs">D</label><input type="file" id="gambar_opsi_3" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
+<div><label class="text-xs">E</label><input type="file" id="gambar_opsi_4" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
+</div>
+</div>
+<div class="mt-3">
+<label class="text-sm font-bold">Pembahasan + Gambar:</label>
+<div class="flex gap-2 mb-1"><input type="file" id="sPembahasanGambar" accept="image/*" class="border p-1 rounded text-sm"><span class="text-xs">Opsional</span></div>
+<textarea id="sPembahasan" placeholder="Pembahasan" class="w-full border p-2 rounded h-16"></textarea>
+</div>
+<div class="flex gap-2 mt-3">
+<button onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan</button>
+<button onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Tambah Lagi</button>
+<span id="soalMsg" class="text-sm"></span>
+</div>
+</div>
+<div class="bg-white p-4 rounded shadow">
+<h3 class="font-bold mb-2">Daftar Soal</h3>
+<div id="listSoal" class="text-sm">Pilih paket dulu</div>
+</div>
+</div>
+
+<!-- TAB 4 NILAI -->
+<div id="viewNilai" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">4. Laporan Nilai Siswa</h3>
+<div class="flex flex-wrap gap-2 mb-3">
+<select id="filterPaketNilai" class="border p-2 rounded text-sm"><option value="">Semua Paket</option></select>
+<input id="searchSiswaNilai" placeholder="Cari Encha" class="border p-2 rounded text-sm flex-1">
+<button onclick="loadLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Refresh</button>
+<button onclick="exportNilaiExcel()" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Export CSV</button>
+</div>
+<div id="rekapNilai" class="text-sm">Klik Refresh</div>
+</div>
+<div class="bg-white p-4 rounded shadow">
+<h3 class="font-bold mb-2">Detail</h3>
+<div id="detailNilai" class="text-sm text-gray-500">Klik Detail</div>
+</div>
+</div>
+
+</div>
+
+<script>
+let allPaketGlobal=[];
+function showTab(t){
+ try{
+   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai'];
+   for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
+   var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
+   if(target) target.classList.remove('hidden');
+   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai'];
+   for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
+   var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+   if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
+   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan();
+ }catch(err){ console.error(err); }
+}
+async function loadPaketCheck(){
+ let res=await fetch('/api/siswa?action=paket_list');
+ allPaketGlobal=await res.json();
+ let html='';
+ allPaketGlobal.forEach(p=>{
+   html+=`<label class="flex gap-2 items-center"><input type="checkbox" value="${p.id}" class="paketCheck"> ${p.kelas} - ${p.mapel} - ${p.nama} (${p.jenis})</label>`;
+ });
+ document.getElementById('checkPaket').innerHTML=html||'Belum ada paket';
+}
+async function loadSiswa(){
+ let res=await fetch('/api/siswa?action=list');
+ let data=await res.json();
+ let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Paket</th><th class="border p-1">Aksi</th></tr>';
+ data.forEach(s=>{
+   let pa='';
+   try{let arr=JSON.parse(s.paket_aktif||'[]'); pa=arr.length+' paket';}catch(e){pa=s.paket_aktif;}
+   html+=`<tr><td class="border p-1">${s.username}</td><td class="border p-1">${s.nama}</td><td class="border p-1 text-xs">${pa}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`;
+ });
+ html+='</table>';
+ document.getElementById('listSiswa').innerHTML=html;
+}
+async function saveSiswa(){
+ let paketAktif=[];
+ document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value)));
+ let body={action: document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif};
+ let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ let d=await res.json();
+ if(d.ok){alert('Siswa disimpan'); resetFormSiswa(); loadSiswa();} else alert(d.msg);
+}
+function resetFormSiswa(){document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>document.getElementById(id).value=''); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false);}
+async function editSiswa(id){
+ let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id);
+ document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa;
+ try{let arr=JSON.parse(s.paket_aktif||'[]'); document.querySelectorAll('.paketCheck').forEach(c=>{c.checked=arr.includes(parseInt(c.value))||arr.includes(c.value.toString());});}catch(e){}
+}
+async function delSiswa(id){if(!confirm('Hapus siswa?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
+loadPaketCheck(); loadSiswa();
+</script>
 
 <script>
 let manifestItems=[];
@@ -155,7 +251,6 @@ async function addBab(){
  alert('Bab '+nama+' ditambahkan!'); loadManifest();
 }
 document.getElementById('pKelas').addEventListener('change',loadManifest);
-
 async function savePaket(){
  let body={action:'add_paket', kelas:document.getElementById('pKelas').value, mapel:document.getElementById('pMapel').value, bab:document.getElementById('pBab').value, jenis:document.getElementById('pJenis').value, nama:document.getElementById('pNama').value, waktu:parseInt(document.getElementById('pWaktu').value)||0, pembahasan:document.getElementById('pBahas').value, kode_akses:document.getElementById('pKode').value, motivasi:document.getElementById('pMotivasi').value};
  if(!body.kelas||!body.mapel||!body.nama){alert('Lengkapi Kelas Mapel Nama Paket'); return;}
@@ -177,77 +272,6 @@ async function loadPaketList(){
 async function delPaket(id){if(!confirm('Hapus paket & semua soalnya?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})}); loadPaketList();}
 </script>
 
-<!-- TAB SOAL -->
-<div id="viewSoal" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Form Soal Lengkap - Unlimited + Simpan & Tambah Lagi</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-<select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select>
-<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()">
-<option value="pg_tunggal">PG Tunggal (A-D/E, 1 kunci - radio)</option>
-<option value="pg_kompleks">PG Kompleks (Multi kunci B+C - checkbox)</option>
-<option value="benar_salah">Benar Salah</option>
-<option value="menjodohkan">Menjodohkan (1-A,2-C,3-B)</option>
-<option value="isian">Isian Singkat</option>
-<option value="essay">Essay</option>
-</select>
-</div>
-
-<textarea id="sPertanyaan" placeholder="Tulis pertanyaan... Support KaTeX $x^2$" class="w-full border p-2 rounded h-24"></textarea>
-<div class="flex gap-2 my-2">
-<input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm">
-<span class="text-xs text-gray-500">Upload gambar soal ke R2</span>
-</div>
-
-<div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div>
-<div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
-<label class="text-sm font-bold text-blue-700">Upload Gambar untuk Opsi A-E (NEW):</label>
-<div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-1">
-<div><label class="text-xs">Gambar A</label><input type="file" id="gambar_opsi_0" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
-<div><label class="text-xs">Gambar B</label><input type="file" id="gambar_opsi_1" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
-<div><label class="text-xs">Gambar C</label><input type="file" id="gambar_opsi_2" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
-<div><label class="text-xs">Gambar D</label><input type="file" id="gambar_opsi_3" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
-<div><label class="text-xs">Gambar E</label><input type="file" id="gambar_opsi_4" accept="image/*" class="border p-1 rounded text-xs w-full"></div>
-</div>
-</div>
-
-<div class="mt-3">
-<label class="text-sm font-bold">Pembahasan + Gambar (NEW):</label>
-<div class="flex gap-2 mb-1"><input type="file" id="sPembahasanGambar" accept="image/*" class="border p-1 rounded text-sm"><span class="text-xs">Opsional tampil di box hijau</span></div>
-<textarea id="sPembahasan" placeholder="Pembahasan akan muncul di box hijau setelah terkunci" class="w-full border p-2 rounded h-16"></textarea>
-</div>
-
-<div class="flex gap-2 mt-3">
-<button onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Soal</button>
-<button onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Simpan & Tambah Lagi</button>
-<span id="soalMsg" class="text-sm"></span>
-</div>
-</div>
-
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Soal di Paket Terpilih</h3>
-<div id="listSoal" class="text-sm">Pilih paket dulu</div>
-</div>
-</div>
-</div>
-
-<!-- TAB 4 LAPORAN NILAI -->
-<div id="viewNilai" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">4. Laporan Nilai Siswa (Encha dll)</h3>
-<div class="flex flex-wrap gap-2 mb-3">
-<select id="filterPaketNilai" class="border p-2 rounded text-sm"><option value="">Semua Paket</option></select>
-<input id="searchSiswaNilai" placeholder="Cari nama Encha" class="border p-2 rounded text-sm flex-1">
-<button onclick="loadLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Refresh Nilai</button>
-<button onclick="exportNilaiExcel()" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Export CSV</button>
-</div>
-<div id="rekapNilai" class="text-sm">Klik Refresh - ambil dari /api/nilai</div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Detail Jawaban</h3>
-<div id="detailNilai" class="text-sm text-gray-500">Klik Detail di tabel</div>
-</div>
-</div>
 <script>
 async function loadPaketForSoal(){
  let res=await fetch('/api/siswa?action=paket_list');
@@ -256,34 +280,24 @@ async function loadPaketForSoal(){
  loadSoalList();
 }
 document.getElementById('sPaket').addEventListener('change',loadSoalList);
-
 function changeTipe(){
  let tipe=document.getElementById('sTipe').value;
  let c=document.getElementById('opsiContainer');
  if(tipe==='pg_tunggal'){
-   c.innerHTML=`Opsi PG Tunggal (1 kunci radio):
-   ${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="radio" name="kunci" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}`;
+   c.innerHTML=`Opsi PG Tunggal:<br>${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="radio" name="kunci" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}`;
  } else if(tipe==='pg_kompleks'){
-   c.innerHTML=`PG Kompleks - Centang lebih dari 1:
-   ${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="checkbox" name="kunci_multi" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}
-   <p class="text-xs text-green-600">Contoh kunci: Centang B dan C untuk jawaban B+C</p>`;
+   c.innerHTML=`PG Kompleks:<br>${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="checkbox" name="kunci_multi" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded"></div>`).join('')}`;
  } else if(tipe==='benar_salah'){
    c.innerHTML=`<div class="flex gap-2"><input type="radio" name="kunci" value="0"> Benar <input type="radio" name="kunci" value="1"> Salah</div>`;
  } else if(tipe==='menjodohkan'){
-   c.innerHTML=`Menjodohkan:
-   <div class="grid grid-cols-2 gap-2">
-   <div>${[1,2,3].map(i=>`<div class="flex gap-1 mb-1"><span>${i}.</span><input id="kiri_${i}" placeholder="Kiri ${i}" class="border p-1 rounded w-full"></div>`).join('')}</div>
-   <div>${['A','B','C'].map(k=>`<div class="flex gap-1 mb-1"><span>${k}.</span><input id="kanan_${k}" placeholder="Kanan ${k}" class="border p-1 rounded w-full"></div>`).join('')}</div>
-   </div>
-   Kunci Pasangan (1-A,2-C,3-B):<input id="kunci_jodoh" placeholder="1-A,2-C,3-B" class="border p-1 rounded w-full">`;
+   c.innerHTML=`Menjodohkan:<div class="grid grid-cols-2 gap-2"><div>${[1,2,3].map(i=>`<div class="flex gap-1 mb-1"><span>${i}.</span><input id="kiri_${i}" placeholder="Kiri ${i}" class="border p-1 rounded w-full"></div>`).join('')}</div><div>${['A','B','C'].map(k=>`<div class="flex gap-1 mb-1"><span>${k}.</span><input id="kanan_${k}" placeholder="Kanan ${k}" class="border p-1 rounded w-full"></div>`).join('')}</div></div>Kunci:<input id="kunci_jodoh" placeholder="1-A,2-C,3-B" class="border p-1 rounded w-full">`;
  } else if(tipe==='isian'){
-   c.innerHTML=`Isian Singkat:<input id="kunci_isian" placeholder="Jawaban benar" class="border p-2 rounded w-full">`;
+   c.innerHTML=`Isian:<input id="kunci_isian" placeholder="Jawaban" class="border p-2 rounded w-full">`;
  } else {
    c.innerHTML=`Essay:<textarea id="kunci_essay" placeholder="Kunci essay" class="w-full border p-1 rounded"></textarea>`;
  }
 }
 changeTipe();
-
 async function saveSoal(tambahLagi){
  let paket_id=document.getElementById('sPaket').value;
  let tipe=document.getElementById('sTipe').value;
@@ -305,30 +319,27 @@ async function saveSoal(tambahLagi){
    opsi=[...kiri,...kanan]; kunci=[document.getElementById('kunci_jodoh').value];
  } else if(tipe==='isian'){kunci=[document.getElementById('kunci_isian').value];}
  else {kunci=[document.getElementById('kunci_essay').value];}
-
  let fd=new FormData();
  fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
  let file=document.getElementById('sGambar').files[0]; if(file) fd.append('gambar_file',file); for(let i=0;i<5;i++){ let fg=document.getElementById('gambar_opsi_'+i); if(fg&&fg.files[0]) fd.append('gambar_opsi_'+i, fg.files[0]); } let fb=document.getElementById('sPembahasanGambar'); if(fb&&fb.files[0]) fd.append('gambar_pembahasan', fb.files[0]);
  let res=await fetch('/api/soal',{method:'POST',body:fd});
  let d=await res.json();
  if(d.ok){
-   document.getElementById('soalMsg').innerText='Soal tersimpan ✓';
+   document.getElementById('soalMsg').innerText='Soal tersimpan OK';
    loadSoalList();
    if(tambahLagi){
      document.getElementById('sPertanyaan').value=''; document.getElementById('sPembahasan').value=''; document.getElementById('sGambar').value='';
      for(let i=0;i<5;i++){let el=document.getElementById('opsi_'+i); if(el) el.value='';}
      document.getElementById('sPertanyaan').focus();
-   } else {
-     document.getElementById('sPertanyaan').value='';
    }
- } else {alert('Gagal simpan');}
+ }
 }
 async function loadSoalList(){
  let pid=document.getElementById('sPaket').value;
  if(!pid) return;
  let res=await fetch('/api/soal?paket_id='+pid);
  let data=await res.json();
- document.getElementById('listSoal').innerHTML=data.length+' soal di paket ini:<br>'+data.map((s,i)=>`${i+1}. ${s.pertanyaan.substring(0,80)}... [${s.tipe}]`).join('<br>');
+ document.getElementById('listSoal').innerHTML=data.length+' soal:<br>'+data.map((s,i)=>`${i+1}. ${s.pertanyaan.substring(0,80)}... [${s.tipe}]`).join('<br>');
 }
 </script>
 
@@ -336,7 +347,7 @@ async function loadSoalList(){
 async function loadLaporan(){
   var el=document.getElementById('rekapNilai');
   if(!el) return;
-  el.innerHTML='Loading dari /api/nilai...';
+  el.innerHTML='Loading...';
   try{
     var resP=await fetch('/api/siswa?action=paket_list');
     var paketData=await resP.json();
@@ -346,21 +357,15 @@ async function loadLaporan(){
       for(var i=0;i<paketData.length;i++){ opts+='<option value="'+paketData[i].id+'">['+paketData[i].kelas+'] '+paketData[i].nama+'</option>'; }
       fEl.innerHTML=opts;
     }
-    var paketFilter=document.getElementById('filterPaketNilai').value;
     var search=(document.getElementById('searchSiswaNilai').value||'').toLowerCase();
     var url='/api/nilai?action=list';
-    if(paketFilter) url+='&paket_id='+paketFilter;
     var r=await fetch(url);
     var hasil=[];
     if(r.ok){
       var j=await r.json();
-      if(Array.isArray(j)) hasil=j;
-      else if(j.data) hasil=j.data;
+      if(Array.isArray(j)) hasil=j; else if(j.data) hasil=j.data;
     }
-    if(hasil.length===0){
-      el.innerHTML='<div class="p-3 bg-yellow-50 border rounded text-sm"><b>Belum ada nilai di D1.</b><br>1. Pastikan functions/api/nilai.js sudah deploy<br>2. Login sebagai siswa di index.html -> kerjakan soal -> Selesai<br>3. Refresh disini</div>';
-      return;
-    }
+    if(hasil.length===0){ el.innerHTML='Belum ada nilai. Pastikan nilai.js deploy'; return; }
     var filtered=[];
     for(var k=0;k<hasil.length;k++){
       var h=hasil[k];
@@ -375,46 +380,23 @@ async function loadLaporan(){
       var hh=filtered[x];
       var w=hh.created_at||'';
       try{ w=new Date(w).toLocaleString('id-ID'); }catch(e){}
-      var skor=hh.skor||0;
-      var cls=skor>=75?'text-green-600':'text-red-600';
-      html+='<tr><td class="border p-1">'+w+'</td><td class="border p-1 font-bold">'+(hh.nama||'')+'<br><span class="text-xs text-gray-500">'+(hh.username||'')+'</span></td><td class="border p-1">'+(hh.kelas||'')+' / '+(hh.paket_nama||hh.paket_id||'')+'</td><td class="border p-1 text-center font-bold '+cls+'">'+skor+'</td><td class="border p-1 text-center">'+(hh.benar||0)+'/'+(hh.total||0)+'</td><td class="border p-1"><button onclick="lihatDetailNilai('+hh.id+')" class="text-blue-600 underline">Detail</button> | <button onclick="hapusNilai('+hh.id+')" class="text-red-600">Hapus</button></td></tr>';
+      html+='<tr><td class="border p-1">'+w+'</td><td class="border p-1 font-bold">'+(hh.nama||'')+'<br><span class="text-xs">'+(hh.username||'')+'</span></td><td class="border p-1">'+(hh.paket_nama||hh.paket_id)+'</td><td class="border p-1 text-center font-bold '+(hh.skor>=75?'text-green-600':'text-red-600')+'">'+hh.skor+'</td><td class="border p-1 text-center">'+(hh.benar||0)+'/'+(hh.total||0)+'</td><td class="border p-1"><button onclick="lihatDetailNilai('+hh.id+')" class="text-blue-600 underline">Detail</button> | <button onclick="hapusNilai('+hh.id+')" class="text-red-600">Hapus</button></td></tr>';
     }
     html+='</table><p class="text-xs mt-2">Total: '+filtered.length+'</p>';
     el.innerHTML=html;
     window._lastHasil=filtered;
-  }catch(e){
-    el.innerHTML='Error: '+e.message;
-  }
+  }catch(e){ el.innerHTML='Error: '+e.message; }
 }
 function lihatDetailNilai(id){
   var arr=window._lastHasil||[];
-  var h=null;
-  for(var i=0;i<arr.length;i++){ if(arr[i].id==id){ h=arr[i]; break; } }
-  if(!h) return;
-  var j=h.jawaban||[];
-  try{ if(typeof j==='string') j=JSON.parse(j); }catch(e){}
-  var html='<div class="border p-2 bg-gray-50 rounded text-xs"><b>'+ (h.nama||'') +'</b> Skor '+h.skor+'<br>';
-  if(Array.isArray(j)){
-    html+='<table class="w-full border text-xs mt-2"><tr class="bg-gray-100"><th class="border p-1">No</th><th class="border p-1">Jawab</th><th class="border p-1">Kunci</th><th class="border p-1">Status</th></tr>';
-    for(var a=0;a<j.length;a++){ var x=j[a]; html+='<tr><td class="border p-1">'+(a+1)+'</td><td class="border p-1">'+(x.jawab||'')+'</td><td class="border p-1">'+(x.kunci||'')+'</td><td class="border p-1">'+(x.benar?'Benar':'Salah')+'</td></tr>'; }
-    html+='</table>';
-  }
-  html+='<pre class="text-xs bg-white p-2 border mt-2 overflow-auto max-h-40">'+JSON.stringify(h,null,2).substring(0,3000)+'</pre></div>';
-  document.getElementById('detailNilai').innerHTML=html;
+  for(var i=0;i<arr.length;i++){ if(arr[i].id==id){ document.getElementById('detailNilai').innerHTML='<pre class="text-xs bg-white p-2 border max-h-80 overflow-auto">'+JSON.stringify(arr[i],null,2).substring(0,5000)+'</pre>'; break; } }
 }
-async function hapusNilai(id){
-  if(!confirm('Hapus ID '+id+'?')) return;
-  await fetch('/api/nilai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})});
-  loadLaporan();
-}
+async function hapusNilai(id){ if(!confirm('Hapus?')) return; await fetch('/api/nilai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadLaporan(); }
 function exportNilaiExcel(){
   var rows=document.querySelectorAll('#rekapNilai table tr');
-  if(rows.length===0){ alert('Tidak ada data'); return; }
+  if(rows.length===0){ alert('Tidak ada'); return; }
   var csv=[];
-  rows.forEach(function(r){
-    var cols=[...r.querySelectorAll('th,td')].map(function(c){ return '"'+(c.innerText||'').replace(/"/g,'""')+'"'; });
-    csv.push(cols.join(','));
-  });
+  rows.forEach(function(r){ var cols=[...r.querySelectorAll('th,td')].map(function(c){ return '"'+(c.innerText||'').replace(/"/g,'""')+'"'; }); csv.push(cols.join(',')); });
   var blob=new Blob([csv.join('\n')],{type:'text/csv'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a'); a.href=url; a.download='rekap_nilai_AP.csv'; a.click();
