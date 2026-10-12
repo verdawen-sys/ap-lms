@@ -1,20 +1,7 @@
 name = "ap-lms"
 compatibility_date = "2025-04-01"
-pages_build_output_dir = "."
 
-# D1 - Database Utama
 [[d1_databases]]
 binding = "AP_LMS_DB"
 database_name = "ap-lms-db"
 database_id = "ba5f97e3-db0f-44b6-b602-22d0c8d57723"
-
-# FIX: Tambah binding R2 agar env.AP_LMS_R2 tidak undefined
-# Nama bucket harus sama dengan yang di Dashboard Cloudflare
-[[r2_buckets]]
-binding = "AP_LMS_R2"
-bucket_name = "ap-lms-r2"
-
-# Opsional: Variabel Admin (lebih aman set di Dashboard, bukan di sini)
-# Jangan tulis password asli di file ini karena repo public
-# [vars]
-# ADMIN_USER = "admin"
