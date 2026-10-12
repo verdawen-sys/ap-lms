@@ -1,7 +1,0 @@
-name = "ap-lms"
-compatibility_date = "2025-04-01"
-
-[[d1_databases]]
-binding = "AP_LMS_DB"
-database_name = "ap-lms-db"
-database_id = "ba5f97e3-db0f-44b6-b602-22d0c8d57723"
