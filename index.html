@@ -340,15 +340,15 @@ function renderSoal(){
      document.getElementById('pembahasanText').innerText='Kunci: '+formatKunciJodoh(j.pairs)+' | Pembahasan: '+(s.pembahasan||'-');
    } else if(tipe==='isian' || tipe==='essay'){
      document.getElementById('lockedInfo').innerText=`Terkunci`;
-     document.getElementById('pembahasanText').innerText='Kunci: '+(kunci[0]||'-')+' | Pembahasan: '+(s.pembahasan||'-');
+     document.getElementById('pembahasanText').innerHTML='Kunci: '+(kunci[0]||'-')+' | Pembahasan: '+(s.pembahasan||'-');
    } else if(tipe==='pg_kompleks'){
      document.getElementById('lockedInfo').innerText=`Terkunci - Kunci ${kunci.map(k=>String.fromCharCode(65+k)).join(',')}`;
-     document.getElementById('pembahasanText').innerText='Pembahasan: '+(s.pembahasan||'-');
+     document.getElementById('pembahasanText').innerHTML='Pembahasan: '+(s.pembahasan||'-');
      let childs=container.querySelectorAll('div.border');
      childs.forEach((el,i)=>{ if(kunci.includes(i)) el.classList.add('opt-correct'); });
    } else {
      document.getElementById('lockedInfo').innerText=`Terkunci: ${jawaban[curIdx]!==null? String.fromCharCode(65+jawaban[curIdx]) : '-'} - Kunci ${kunci.map(k=>String.fromCharCode(65+k)).join(',')}`;
-     document.getElementById('pembahasanText').innerText='Pembahasan: '+(s.pembahasan||'-');
+     document.getElementById('pembahasanText').innerHTML='Pembahasan: '+(s.pembahasan||'-');
      let childs=container.children;
      for(let i=0;i<childs.length;i++){
        if(kunci.includes(i)) childs[i].classList.add('opt-correct');
@@ -363,7 +363,7 @@ function renderSoal(){
      // Tampilkan hanya info terkunci tanpa pembahasan
      info.classList.remove('hidden');
      document.getElementById('lockedInfo').innerText='Terkunci ✓';
-     document.getElementById('pembahasanText').innerText = (paketAktif.pembahasan==='akhir')? 'Pembahasan akan tampil di akhir.' : 'Pembahasan tidak ditampilkan untuk paket ini.';
+     document.getElementById('pembahasanText').innerHTML = (paketAktif.pembahasan==='akhir')? 'Pembahasan akan tampil di akhir.' : 'Pembahasan tidak ditampilkan untuk paket ini.';
      document.getElementById('pembahasanImg').classList.add('hidden');
      if(tipe==='pg_kompleks' || tipe==='pg_tunggal' || tipe==='benar_salah'){
        // tetap beri warna benar/salah tanpa teks pembahasan
@@ -380,6 +380,7 @@ function renderSoal(){
  // FIX BUG 2: KaTeX dukung \( \) \[ \] $$ $
  if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('quizView'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
 }
+  if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('lockedBox'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
   // FIX BUG 1: Menjodohkan - Drag + Klik (HP) + Anti-duplikat
 function renderJodohSiswa(s, container){
   let j=parseJodoh(s);
@@ -567,10 +568,11 @@ function tampilkanDetailHasil(){
       <b>${i+1}. ${ok?'✅ Benar':'❌ Salah'}</b> <span class="text-xs text-gray-500">${escHtml(s.tipe||'')}</span><br>
       <div class="text-xs mt-1">${escHtml(String(s.pertanyaan||'').replace(/<[^>]*>/g,'')).substring(0,120)}</div>
       <div class="text-xs mt-1">Jawaban kamu: <b>${escHtml(jwbTxt)}</b> | Kunci: <b>${escHtml(kunciTxt)}</b></div>
-      ${tampilBahas? `<div class="text-xs mt-1">Pembahasan: ${escHtml(s.pembahasan||'-')}</div>` : ''}
+      ${tampilBahas? `<div class="text-xs mt-1">Pembahasan: ${s.pembahasan||'-'}</div>` : ''}
     </div>`;
   });
   document.getElementById('detailHasil').innerHTML = html;
+  if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('detailHasil'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
 }
 async function submitNilai(){
  clearInterval(timerInt);
