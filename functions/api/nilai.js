@@ -1,43 +1,37 @@
-export async function onRequest(context){
-  const db = context.env.AP_LMS_DB;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS nilai (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, nama TEXT, kelas TEXT, mapel TEXT, bab TEXT, paket_id INTEGER, paket_nama TEXT, jenis TEXT, skor INTEGER, benar INTEGER, total INTEGER, jawaban TEXT, waktu TEXT)`).run();
-  try{ await db.prepare(`ALTER TABLE nilai ADD COLUMN wa TEXT`).run(); }catch(e){}
-  try{ await db.prepare(`ALTER TABLE nilai ADD COLUMN started_at TEXT`).run(); }catch(e){}
-  try{ await db.prepare(`ALTER TABLE nilai ADD COLUMN finished_at TEXT`).run(); }catch(e){}
-  try{ await db.prepare(`ALTER TABLE nilai ADD COLUMN durasi_detik INTEGER`).run(); }catch(e){}
+const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' };
+const json = (d, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { 'Content-Type': 'application/json', ...CORS } });
 
-  if(context.request.method==='GET'){
-    const url = new URL(context.request.url);
-    const paket_id = url.searchParams.get('paket_id');
-    if(paket_id){
-      const res = await db.prepare(`SELECT * FROM nilai WHERE paket_id=? ORDER BY skor DESC, id DESC LIMIT 50`).bind(paket_id).all();
-      return new Response(JSON.stringify(res.results), {headers:{'Content-Type':'application/json'}});
+export async function onRequest({ request, env }) {
+  if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+  try {
+    const db = env.DB;
+    if (!db) return json({ ok: false, msg: 'DB belum ter-bind' }, 500);
+    await db.prepare(`CREATE TABLE IF NOT EXISTS nilai(id INTEGER PRIMARY KEY AUTOINCREMENT, siswa_id TEXT, username TEXT, nama TEXT, paket_id TEXT, paket_nama TEXT, kelas TEXT, mapel TEXT, bab TEXT, jenis TEXT, nilai INTEGER, benar INTEGER, total INTEGER, tanggal TEXT, durasi INTEGER, jawaban TEXT, detail TEXT)`).run();
+    if (request.method === 'GET') {
+      const url = new URL(request.url);
+      const paket_id = url.searchParams.get('paket_id');
+      const username = url.searchParams.get('username');
+      let q = `SELECT * FROM nilai`;
+      const cond = [];
+      const vals = [];
+      if (paket_id) { cond.push('paket_id=?'); vals.push(paket_id); }
+      if (username) { cond.push('username=?'); vals.push(username); }
+      if (cond.length) q += ' WHERE ' + cond.join(' AND ');
+      q += ' ORDER BY id DESC';
+      const r = await db.prepare(q).bind(...vals).all();
+      return json(r.results || []);
     }
-    const all = await db.prepare(`SELECT * FROM nilai ORDER BY id DESC LIMIT 100`).all();
-    return new Response(JSON.stringify(all.results), {headers:{'Content-Type':'application/json'}});
-  }
-
-  if(context.request.method==='POST'){
-    try{
-      const body = await context.request.json();
-      if(body.action === 'delete' && body.id){
-        await db.prepare(`DELETE FROM nilai WHERE id=?`).bind(body.id).run();
-        return new Response(JSON.stringify({ok:true}), {headers:{'Content-Type':'application/json'}});
+    if (request.method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      if (b.action === 'delete') {
+        await db.prepare(`DELETE FROM nilai WHERE id=?`).bind(b.id).run();
+        return json({ ok: true });
       }
-      const {username,nama,kelas,mapel,bab,paket_id,paket_nama,jenis,skor,benar,total,jawaban,wa,started_at,finished_at} = body;
-      const nowISO = new Date().toISOString();
-      const finishISO = finished_at || nowISO;
-      const startISO = started_at || null;
-      let durasi = null;
-      if(startISO){
-        try{ durasi = Math.round((new Date(finishISO) - new Date(startISO)) / 1000); }catch(e){}
-      }
-      // FIX BUG 6: 17 kolom = 17 tanda ?
-      await db.prepare(`INSERT INTO nilai (username,nama,kelas,mapel,bab,paket_id,paket_nama,jenis,skor,benar,total,jawaban,waktu,wa,started_at,finished_at,durasi_detik) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-        .bind(username,nama,kelas,mapel,bab,paket_id,paket_nama,jenis,skor,benar,total,JSON.stringify(jawaban||[]), nowISO, wa||'', startISO, finishISO, durasi).run();
-      return new Response(JSON.stringify({ok:true}), {headers:{'Content-Type':'application/json'}});
-    }catch(e){
-      return new Response(JSON.stringify({ok:false, msg: e.message}), {status:500, headers:{'Content-Type':'application/json'}});
+      const tanggal = b.tanggal || new Date().toISOString();
+      await db.prepare(`INSERT INTO nilai(siswa_id,username,nama,paket_id,paket_nama,kelas,mapel,bab,jenis,nilai,benar,total,tanggal,durasi,jawaban,detail) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+        .bind(b.siswa_id || '', b.username || '', b.nama || '', b.paket_id || '', b.paket_nama || '', b.kelas || '', b.mapel || '', b.bab || '', b.jenis || '', b.nilai || 0, b.benar || 0, b.total || 0, tanggal, b.durasi || 0, JSON.stringify(b.jawaban || {}), JSON.stringify(b.detail || [])).run();
+      return json({ ok: true });
     }
-  }
+    return json({ ok: false, msg: 'Method tidak didukung' }, 405);
+  } catch (e) { return json({ ok: false, msg: e.message }, 500); }
 }

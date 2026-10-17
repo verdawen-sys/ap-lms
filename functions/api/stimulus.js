@@ -1,57 +1,38 @@
-// functions/api/stimulus.js - VERSI TANPA R2 (GRATIS)
-export async function onRequest(context){
-  const { request, env } = context;
-  const url = new URL(request.url);
-  const DB = env.AP_LMS_DB; // Sesuai binding Kakak yang sudah ada
+const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type,Authorization' };
+const json = (d, s = 200) => new Response(JSON.stringify(d), { status: s, headers: { 'Content-Type': 'application/json', ...CORS } });
 
-  if(request.method==='GET'){
-    const paket_id = url.searchParams.get('paket_id');
-    const rows = await DB.prepare('SELECT * FROM stimulus WHERE paket_id=? ORDER BY soal_dari ASC').bind(paket_id).all();
-    return Response.json(rows.results || []);
-  }
-
-  if(request.method==='POST'){
-    const body = await request.json();
-    const paket_id = body.paket_id;
-    const jenis = body.jenis;
-    const dari = parseInt(body.soal_dari), sampai = parseInt(body.soal_sampai);
-
-    // VALIDASI TUMPANG TINDIH
-    const lama = await DB.prepare('SELECT * FROM stimulus WHERE paket_id=?').bind(paket_id).all();
-    for(let s of (lama.results||[])){
-      if(dari <= s.soal_sampai && sampai >= s.soal_dari){
-        return Response.json({ok:false, msg:`Tumpang tindih dengan stimulus ${s.jenis} soal ${s.soal_dari}-${s.soal_sampai}.`},{status:400});
-      }
+export async function onRequest({ request, env }) {
+  if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+  try {
+    const db = env.DB;
+    if (!db) return json({ ok: false, msg: 'DB belum ter-bind' }, 500);
+    await db.prepare(`CREATE TABLE IF NOT EXISTS stimulus(id INTEGER PRIMARY KEY AUTOINCREMENT, paket_id TEXT, soal_dari INTEGER, soal_sampai INTEGER, jenis TEXT, teks TEXT, file_url TEXT, audio_url TEXT, video_url TEXT)`).run();
+    if (request.method === 'GET') {
+      const pid = new URL(request.url).searchParams.get('paket_id') || '';
+      const r = await db.prepare(`SELECT * FROM stimulus WHERE paket_id=? ORDER BY soal_dari ASC`).bind(pid).all();
+      return json({ ok: true, data: r.results || [] });
     }
-    const id = 'stim_' + Date.now();
-    let file_url = '', video_url = '', teks = '', max_putar = 0;
-
-    if(jenis === 'gambar'){
-      // Gambar disimpan sebagai Base64 string di file_url
-      file_url = body.file_base64 || '';
-      if(!file_url) return Response.json({ok:false, msg:'Gambar wajib'},{status:400});
-      if(file_url.length > 1400000) return Response.json({ok:false, msg:'Gambar terlalu besar, max ~1MB. Kecilkan dulu.'},{status:400});
-    } else if(jenis === 'audio'){
-      // Audio hanya link, tidak upload
-      video_url = body.audio_url || '';
-      if(!video_url) return Response.json({ok:false, msg:'Link Audio wajib'},{status:400});
-      max_putar = parseInt(body.max_putar || 0);
-    } else if(jenis === 'video'){
-      video_url = body.video_url || '';
-      if(!video_url) return Response.json({ok:false, msg:'Link video wajib'},{status:400});
-    } else if(jenis === 'teks'){
-      teks = body.teks || '';
+    if (request.method === 'DELETE') {
+      const id = new URL(request.url).searchParams.get('id');
+      await db.prepare(`DELETE FROM stimulus WHERE id=?`).bind(id).run();
+      return json({ ok: true });
     }
-
-    await DB.prepare('INSERT INTO stimulus (id,paket_id,jenis,soal_dari,soal_sampai,keterangan,file_url,video_url,video_tipe,teks,max_putar) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
-      .bind(id,paket_id,jenis,dari,sampai,body.keterangan||'',file_url,video_url,body.video_tipe||'',teks,max_putar).run();
-    return Response.json({ok:true, id});
-  }
-
-  if(request.method==='DELETE'){
-    const id = url.searchParams.get('id');
-    await DB.prepare('DELETE FROM stimulus WHERE id=?').bind(id).run();
-    return Response.json({ok:true});
-  }
-  return Response.json({ok:false, msg:'Method tidak didukung'},{status:405});
+    if (request.method === 'POST') {
+      const b = await request.json().catch(() => ({}));
+      const jenis = b.jenis || 'teks';
+      if (!['gambar', 'audio', 'video', 'teks'].includes(jenis)) return json({ ok: false, msg: 'Jenis tidak valid' }, 400);
+      if (!b.paket_id) return json({ ok: false, msg: 'paket_id wajib' }, 400);
+      const dari = Number(b.soal_dari);
+      const sampai = Number(b.soal_sampai);
+      if (!dari || !sampai || sampai < dari) return json({ ok: false, msg: 'Range soal tidak valid' }, 400);
+      if (jenis === 'gambar' && (b.file_url || '').length > 1400000) return json({ ok: false, msg: 'Gambar stimulus max ~1MB' }, 400);
+      const cek = await db.prepare(`SELECT COUNT(*) as c FROM stimulus WHERE paket_id=? AND NOT (soal_sampai < ? OR soal_dari > ?)`).bind(b.paket_id, dari, sampai).first();
+      if (cek && cek.c > 0) return json({ ok: false, msg: 'Range tumpang tindih dengan stimulus lain' }, 400);
+      // teks disimpan mentah, tanpa strip harakat
+      await db.prepare(`INSERT INTO stimulus(paket_id,soal_dari,soal_sampai,jenis,teks,file_url,audio_url,video_url) VALUES(?,?,?,?,?,?,?,?)`)
+        .bind(b.paket_id, dari, sampai, jenis, b.teks || '', b.file_url || '', b.audio_url || '', b.video_url || '').run();
+      return json({ ok: true });
+    }
+    return json({ ok: false, msg: 'Method tidak didukung' }, 405);
+  } catch (e) { return json({ ok: false, msg: e.message }, 500); }
 }
