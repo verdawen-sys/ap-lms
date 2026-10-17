@@ -9,6 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/mhchem.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>.quran{font-family:'Amiri Quran','Amiri',serif!important;direction:rtl;unicode-bidi:isolate;display:inline-block;line-height:2.1;font-size:1.45em;text-align:right}.arab{font-family:'Amiri',serif!important;direction:rtl;unicode-bidi:isolate}</style>
 <style>
 .locked{pointer-events:none;opacity:0.7}
 .opt-selected{border-color:#3b82f6!important;background:#eff6ff!important}
@@ -114,15 +116,16 @@ const MOTIVASI_DEFAULT={
 };
 function getMotivasi(paket){
  if(paket.motivasi && paket.motivasi.trim()!="") return paket.motivasi;
- let k = paket.kelas.includes("TKA")?"TKA":paket.kelas.includes("TARUNA")?"TARUNA":paket.kelas.startsWith("SD")?"SD":paket.kelas.startsWith("SMP")?"SMP":"SMA";
+ let _kls = paket.kelas?String(paket.kelas):"";
+ let k = _kls.includes("TKA")?"TKA":_kls.includes("TARUNA")?"TARUNA":_kls.startsWith("SD")?"SD":_kls.startsWith("SMP")?"SMP":"SMA";
  let arr = MOTIVASI_DEFAULT[k]||MOTIVASI_DEFAULT.SMA;
  return arr[Math.floor(Math.random()*arr.length)] + " - " + paket.mapel;
 }
 function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
 function parseJSONSafe(v, fallback){ try{ return JSON.parse(v); }catch(e){ return fallback; } }
 function getOpsi(s){ let o=parseJSONSafe(s.opsi, []); return Array.isArray(o)? o : []; }
 function getKunci(s){ let k=parseJSONSafe(s.kunci, []); return Array.isArray(k)? k : [k]; }
-// FIX BUG 1: parse menjodohkan robust - dukung format string "0-1" dan array [0,1]
 function parseJodoh(s){
   let kunci=getKunci(s); let opsi=getOpsi(s);
   let parsed=null;
@@ -135,7 +138,6 @@ function parseJodoh(s){
   let nKiri = pairs.length || Math.floor(opsi.length/2) || 3;
   return { kiri: opsi.slice(0,nKiri), kanan: opsi.slice(nKiri), pairs, nKiri };
 }
-// FIX BUG 3: cek setting pembahasan dari paket
 function bolehTampilBahas(){
   let mode = (paketAktif && paketAktif.pembahasan)? String(paketAktif.pembahasan).toLowerCase() : 'langsung';
   if(mode==='tanpa') return false;
@@ -151,22 +153,24 @@ function formatKunciJodoh(pairs){
     return (parseInt(a)+1)+' → '+String.fromCharCode(97+parseInt(b));
   }).join(', ');
 }
-
 async function doLogin(){
  let u=document.getElementById('lUser').value.trim();
  let p=document.getElementById('lPass').value.trim();
- if(!u||!p) return;
+ if(!u||!p){document.getElementById('loginMsg').innerText='Isi Username dan Password dulu.'; return;}
+ document.getElementById('loginMsg').innerText='Memeriksa...';
+ try{
  let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',username:u,password:p})});
- let data=await res.json();
- if(!data.ok){document.getElementById('loginMsg').innerText=data.msg||'Gagal login'; return;}
+ let data=null; try{ data=await res.json(); }catch(e){ data=null; }
+ if(!res.ok||!data||!data.ok){document.getElementById('loginMsg').innerText=(data&&data.msg)||('Gagal login (HTTP '+res.status+')'); return;}
  siswa=data.siswa;
  localStorage.setItem('ap_siswa',JSON.stringify(siswa));
  initHome();
+ }catch(e){ document.getElementById('loginMsg').innerText='Tidak bisa hubungi server: '+e.message; }
 }
 function doLogout(){localStorage.removeItem('ap_siswa');location.reload();}
 function initHome(){
- let s=localStorage.getItem('ap_siswa');
- if(s){siswa=JSON.parse(s); document.getElementById('loginView').classList.add('hidden'); document.getElementById('homeView').classList.remove('hidden'); document.getElementById('welcome').innerText="Halo, "+siswa.nama; document.getElementById('topUser').innerText=siswa.nama; loadPaket();}
+ let s=null; try{ s=localStorage.getItem('ap_siswa'); if(s) siswa=JSON.parse(s); }catch(e){ siswa=null; localStorage.removeItem('ap_siswa'); }
+ if(siswa&&siswa.nama){ document.getElementById('loginView').classList.add('hidden'); document.getElementById('homeView').classList.remove('hidden'); document.getElementById('welcome').innerText="Halo, "+siswa.nama; document.getElementById('topUser').innerText=siswa.nama; loadPaket();}
  else {document.getElementById('loginView').classList.remove('hidden');}
 }
 async function loadPaket(){
@@ -203,7 +207,7 @@ async function loadPaket(){
 }
 function toggleMapel(mapel){ _mapelTerbuka[mapel]=_mapelTerbuka[mapel]===false? true:false; loadPaket(); }
 function toggleSemuaMapel(buka){
-  if(window._lastMapelKeys) window._lastMapelKeys.forEach(k=>{_mapelTerbuka[k]=buka;});
+  if(_lastMapelKeys) _lastMapelKeys.forEach(k=>{_mapelTerbuka[k]=buka;});
   loadPaket();
 }
 
@@ -215,7 +219,6 @@ async function startPaket(id){
  let resSoal=await fetch('/api/soal?paket_id='+id);
  soalList=await resSoal.json();
  if(soalList.length==0){alert('Paket ini belum ada soal');return;}
- // FIX BUG 6: catat waktu mulai untuk durasi
  startTime=new Date().toISOString();
  _klikJodohDipilih=null;
  if(paketAktif.jenis==='Latihan'){
@@ -256,7 +259,6 @@ function renderSoal(){
  document.getElementById('qCounter').innerText=`Soal ${curIdx+1}/${soalList.length}`;
  document.getElementById('progressBar').style.width=((curIdx+1)/soalList.length*100)+'%';
  document.getElementById('qText').innerHTML=s.pertanyaan;
- // FIX BUG 4: gambar bisa R2 (via CDN) atau Base64 (data:)
  if(s.gambar){
    document.getElementById('qImg').src = String(s.gambar).startsWith('data:')? s.gambar : '/api/cdn/'+s.gambar;
    document.getElementById('qImg').classList.remove('hidden');
@@ -311,7 +313,6 @@ function renderSoal(){
    });
  }
 
- // Gambar opsi A-E
  try{
    let og = s.opsi_gambar? JSON.parse(s.opsi_gambar) : null;
    if(og && Array.isArray(og)){
@@ -328,7 +329,6 @@ function renderSoal(){
 
  if(locked[curIdx] && bolehTampilBahas()){
    document.getElementById('lockedBox').classList.remove('hidden');
-   // Gambar pembahasan
    let pbImg=document.getElementById('pembahasanImg');
    if(s.pembahasan_gambar){
      pbImg.src=String(s.pembahasan_gambar).startsWith('data:')? s.pembahasan_gambar : '/api/cdn/'+s.pembahasan_gambar;
@@ -337,7 +337,7 @@ function renderSoal(){
    if(tipe==='menjodohkan'){
      document.getElementById('lockedInfo').innerText=`Terkunci: Menjodohkan - Cek pasangan benar di bawah`;
      let j=parseJodoh(s);
-     document.getElementById('pembahasanText').innerText='Kunci: '+formatKunciJodoh(j.pairs)+' | Pembahasan: '+(s.pembahasan||'-');
+     document.getElementById('pembahasanText').innerHTML='Kunci: '+formatKunciJodoh(j.pairs)+' | Pembahasan: '+(s.pembahasan||'-');
    } else if(tipe==='isian' || tipe==='essay'){
      document.getElementById('lockedInfo').innerText=`Terkunci`;
      document.getElementById('pembahasanText').innerHTML='Kunci: '+(kunci[0]||'-')+' | Pembahasan: '+(s.pembahasan||'-');
@@ -358,15 +358,12 @@ function renderSoal(){
  } else {
    document.getElementById('lockedBox').classList.add('hidden');
    if(locked[curIdx] &&!bolehTampilBahas()){
-     // Sudah terkunci tapi pembahasan ditahan sesuai setting
      let info=document.getElementById('lockedBox');
-     // Tampilkan hanya info terkunci tanpa pembahasan
      info.classList.remove('hidden');
      document.getElementById('lockedInfo').innerText='Terkunci ✓';
      document.getElementById('pembahasanText').innerHTML = (paketAktif.pembahasan==='akhir')? 'Pembahasan akan tampil di akhir.' : 'Pembahasan tidak ditampilkan untuk paket ini.';
      document.getElementById('pembahasanImg').classList.add('hidden');
      if(tipe==='pg_kompleks' || tipe==='pg_tunggal' || tipe==='benar_salah'){
-       // tetap beri warna benar/salah tanpa teks pembahasan
        let childs=container.children;
        for(let i=0;i<childs.length;i++){
          if(kunci.includes(i)) childs[i].classList.add('opt-correct');
@@ -377,11 +374,9 @@ function renderSoal(){
  }
  renderNumberBar();
  document.getElementById('nextBtn').innerText=curIdx==soalList.length-1?'Selesai & Kirim Nilai':'Lanjut →';
- // FIX BUG 2: KaTeX dukung \( \) \[ \] $$ $
- if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('quizView'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
+ renderRich(document.getElementById('quizView'));
 }
-  if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('lockedBox'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
-  // FIX BUG 1: Menjodohkan - Drag + Klik (HP) + Anti-duplikat
+  // lockedBox sudah ikut ter-render lewat renderRich(quizView)
 function renderJodohSiswa(s, container){
   let j=parseJodoh(s);
   let kiri=j.kiri, kanan=j.kanan;
@@ -433,7 +428,6 @@ function pasangJodoh(kiriIdx, orig){
   if(locked[curIdx]) return;
   let ans=jawaban[curIdx];
   if(!Array.isArray(ans)) return;
-  // FIX ANTI-DUPLIKAT: hapus dari kiri lain dulu
   let oldPos=ans.indexOf(orig);
   if(oldPos!==-1) ans[oldPos]=null;
   ans[kiriIdx]=orig;
@@ -449,7 +443,6 @@ function klikJodoh(orig){
     renderSoal();
     return;
   }
-  // Jika sudah ada yang dipilih, ganti pilihan
   _klikJodohDipilih=orig;
   renderSoal();
 }
@@ -512,7 +505,6 @@ function cekBenar(s, jwb){
     if(jwb===null||jwb===undefined) return false;
     if(tipe==='menjodohkan'){
       let j=parseJodoh(s);
-      // Normalisasi pairs ke bentuk "i-j" agar perbandingan stabil
       let normPairs=(arr)=>arr.map(p=>{
         if(Array.isArray(p)) return p[0]+'-'+p[1];
         return String(p).trim();
@@ -541,7 +533,7 @@ function cekBenar(s, jwb){
     return kunci.includes(jwb);
   }catch(e){ return false; }
 }
-// FIX BUG 5: Detail hasil per soal
+
 function tampilkanDetailHasil(){
   let mode = (paketAktif && paketAktif.pembahasan)? String(paketAktif.pembahasan).toLowerCase() : 'langsung';
   let tampilBahas = mode!=='tanpa';
@@ -572,14 +564,13 @@ function tampilkanDetailHasil(){
     </div>`;
   });
   document.getElementById('detailHasil').innerHTML = html;
-  if(window.renderMathInElement){ try{ renderMathInElement(document.getElementById('detailHasil'),{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}]}); }catch(e){} }
+  renderRich(document.getElementById('detailHasil'));
 }
 async function submitNilai(){
  clearInterval(timerInt);
  let benar=0;
  soalList.forEach((s,i)=>{ if(cekBenar(s, jawaban[i])) benar++; });
  let skor=Math.round(benar/soalList.length*100);
- // FIX BUG 6: cek hasil server, jangan asal klaim terkirim
  let terkirim=false, pesanErr='';
  try{
    let res=await fetch('/api/nilai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
