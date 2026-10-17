@@ -355,9 +355,7 @@ async function loadPaketList(){
 }
 async function delPaket(id){
   if(!confirm('Hapus paket & semua soalnya?'))return;
-  await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JS
-
-ON.stringify({action:'delete_paket',id})});
+  await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})});
   await loadPaketList(); await loadPaketCheck(); await loadPaketForSoal(); await loadLaporan();
 }
 </script>
@@ -527,9 +525,7 @@ async function editSoal(id){
     else if(s.tipe==='essay'){ let el=document.getElementById('kunci_essay'); if(el) el.value=(kunci&&kunci[0])||''; }
   }catch(e){ console.error(e); }
   updatePreviewSoal();
-  window.scrollTo({top:0, behav
-
-ior:'smooth'});
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 async function delSoal(id){ if(!confirm('Hapus soal ini?')) return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
 
