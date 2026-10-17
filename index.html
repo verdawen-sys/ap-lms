@@ -196,23 +196,11 @@ async function loadPaket(){
  filtered.forEach(p=>{ let key=p.mapel||'Lainnya'; if(!groups[key]) groups[key]=[]; groups[key].push(p); });
  _lastMapelKeys=Object.keys(groups).sort();
  let html="";
- _lastMapelKeys.forEach(mape
-
-l=>{
+ _lastMapelKeys.forEach(mapel=>{
    let list=groups[mapel];
    let isOpen=_mapelTerbuka[mapel]!==false;
-   let inner=list.map(p=>`<div class="bg-white p-4 rounded border hover:shadow cursor-pointer" onclick="startPaket(${p.id})">
-     <div class="text-xs text-orange-600">/${p.kelas}/${p.mapel}/${p.bab}/${p.jenis}/</div>
-     <div class="font-bold">${escHtml(p.nama)}</div>
-     <div class="text-xs text-gray-500">${escHtml(p.jenis)} • ${p.waktu? p.waktu+' menit':'Tanpa Timer'} • ${escHtml(p.pembahasan)}</div>
-   </div>`).join('');
-   html+=`<div class="border rounded overflow-hidden">
-     <button onclick="toggleMapel('${escHtml(mapel)}')" class="w-full bg-white p-3 flex justify-between items-center font-bold text-left">
-       <span>📁 ${escHtml(mapel)} <span class="text-xs font-normal text-gray-500">(${list.length} paket)</span></span>
-       <span class="text-gray-500">${isOpen?'▾':'▸'}</span>
-     </button>
-     <div id="folder-${escHtml(mapel)}" class="${isOpen?'':'hidden'} p-2 bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-3">${inner}</div>
-   </div>`;
+   let inner=list.map(p=>'<div class="bg-white p-4 rounded border hover:shadow cursor-pointer" onclick="startPaket('+p.id+')"><div class="text-xs text-orange-600">/'+p.kelas+'/'+p.mapel+'/'+p.bab+'/'+p.jenis+'/</div><div class="font-bold">'+escHtml(p.nama)+'</div><div class="text-xs text-gray-500">'+escHtml(p.jenis)+' • '+(p.waktu? p.waktu+' menit':'Tanpa Timer')+' • '+escHtml(p.pembahasan)+'</div></div>').join('');
+   html+='<div class="border rounded overflow-hidden"><button data-mapel="'+escHtml(mapel)+'" onclick="toggleMapel(this.dataset.mapel)" class="w-full bg-white p-3 flex justify-between items-center font-bold text-left"><span>📁 '+escHtml(mapel)+' <span class="text-xs font-normal text-gray-500">('+list.length+' paket)</span></span><span class="text-gray-500">'+(isOpen?'▾':'▸')+'</span></button><div id="folder-'+escHtml(mapel)+'" class="'+(isOpen?'':'hidden')+' p-2 bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-3">'+inner+'</div></div>';
  });
  document.getElementById('paketList').innerHTML=html;
 }
