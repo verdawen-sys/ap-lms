@@ -424,18 +424,22 @@ async function saveSoal(tambahLagi){
  }
 }
 async function loadSoalList(){
- try{
- let pid=document.getElementById('sPaket').value;
- if(!pid) return;
- let res=await fetch('/api/soal?paket_id='+pid);
- let data=await res.json();
- window._lastSoal=data||[];
- if(!data.length){ document.getElementById('listSoal').innerHTML='Belum ada soal'; return; }
- document.getElementById('listSoal').innerHTML=data.length+' soal:<br>'+data.map((s,i)=>{
-   let esc=escHtml(s.pertanyaan||'').substring(0,80);
-   return `<div class="flex justify-between gap-2 border-b py-1"><span>${i+1}. ${esc}... [${escHtml(s.tipe)}]</span><span class="shrink-0"><button onclick="previewSoalTersimpan(${s.id})" class="text-orange-600 underline">Preview</button> | <button onclick="editSoal(${s.id})" class="text-blue-600 underline">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`;
- }).join('');
- }catch(e){ document.getElementById('listSoal').innerHTML='Gagal memuat soal: '+escHtml(e.message); }
+  let el = document.getElementById('listSoal');
+  let pid = document.getElementById('sPaket').value;
+  if(!pid) return;
+  el.innerHTML = 'Memuat soal...';
+  try{
+    let res = await fetch('/api/soal?paket_id='+pid);
+    let raw = await res.json();
+    let data = Array.isArray(raw) ? raw : (raw.data || raw.soal || raw.items || []);
+    window._lastSoal = data;
+    if(!data.length){ el.innerHTML = 'Belum ada soal untuk paket '+pid; return; }
+    el.innerHTML = data.length + ' soal:<br>' + data.map((s,i)=>{
+      return `<div class="flex justify-between gap-2 border-b py-1"><span>${i+1}. ${escHtml(s.pertanyaan||'').substring(0,80)}... [${escHtml(s.tipe)}]</span><span class="shrink-0"><button onclick="previewSoalTersimpan(${s.id})" class="text-orange-600 underline">Preview</button> | <button onclick="editSoal(${s.id})" class="text-blue-600 underline">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`;
+    }).join('');
+  }catch(e){
+    el.innerHTML = 'Gagal memuat soal: ' + escHtml(e.message);
+  }
 }
 async function editSoal(id){
   let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s) return;
