@@ -23,6 +23,7 @@
 <button onclick="showTab('paket')" id="tabPaket" class="px-4 py-2 bg-white border rounded">2. Paket & Motivasi</button>
 <button onclick="showTab('soal')" id="tabSoal" class="px-4 py-2 bg-white border rounded">3. Soal Unlimited</button>
 <button onclick="showTab('nilai')" id="tabNilai" class="px-4 py-2 bg-white border rounded">4. Laporan Nilai</button>
+<button onclick="showTab('stimulus')" id="tabStimulus" class="px-4 py-2 bg-white border rounded">5. Kelola Stimulus</button>
 </div>
 
 <!-- TAB 1 SISWA -->
@@ -160,6 +161,65 @@
 </div>
 </div>
 
+<!-- TAB 5 STIMULUS - TAMBAHAN, tidak ubah tab lama -->
+<div id="viewStimulus" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4">
+<h3 class="font-bold mb-2">5. Kelola Stimulus (Gambar | Audio | Video | Teks)</h3>
+<p class="text-xs text-gray-500 mb-3">1 stimulus untuk 1 - beberapa soal. Range mengacu ke <b>Nomor Urut Asli</b> di Daftar Soal (sebelum diacak). 1 soal tidak boleh punya 2 stimulus sekaligus, lintas jenis. Tersimpan di server via /api/stimulus.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+<select id="stPaket" class="border p-2 rounded"><option value="">Pilih Paket</option></select>
+<select id="stJenis" class="border p-2 rounded" onchange="stimOnJenisChange()">
+<option value="gambar">Gambar</option>
+<option value="audio">Audio</option>
+<option value="video">Video</option>
+<option value="teks">Teks Panjang</option>
+</select>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+<input id="stDari" type="number" min="1" placeholder="Soal Dari (no. asli)" class="border p-2 rounded">
+<input id="stSampai" type="number" min="1" placeholder="Soal Sampai (no. asli)" class="border p-2 rounded">
+<input id="stKeterangan" placeholder="Keterangan, misal: Listening Unit 1" class="border p-2 rounded">
+</div>
+<div id="stWrapGambar" class="border p-3 rounded bg-gray-50 mb-2">
+<label class="text-sm font-bold">Upload Gambar (max ~1MB, diubah jadi Base64 di browser)</label><br>
+<input type="file" id="stGambar" accept="image/*" class="border p-1 rounded text-sm mt-1" onchange="validasiGambar(this); stimPreviewAdmin()">
+<div id="stPreviewGambar" class="mt-2"></div>
+</div>
+<div id="stWrapAudio" class="border p-3 rounded bg-gray-50 mb-2 hidden">
+<label class="text-sm font-bold">Audio: Tempel Link (tidak upload file) - Google Drive / Vocaroo / MP3 langsung</label><br>
+<input id="stAudioLink" placeholder="Tempel link audio: https://drive.google.com/... atau https://vocaroo.com/... atau https://...mp3" class="w-full border p-2 rounded mt-1" oninput="stimPreviewAdmin()">
+<div class="mt-2"><label class="text-xs font-bold">Max Putar:</label>
+<select id="stMaxPutar" class="border p-1 rounded text-sm"><option value="0">Bebas</option><option value="2">2x</option><option value="3">3x</option></select>
+<span class="text-xs text-gray-500">Default Bebas. Jika 2x/
+
+3x: dihitung saat diputar sampai habis, lalu tombol Play dikunci di siswa.</span></div>
+<div id="stPreviewAudio" class="mt-2"></div>
+</div>
+<div id="stWrapVideo" class="border p-3 rounded bg-gray-50 mb-2 hidden">
+<label class="text-sm font-bold">Video: TIDAK upload ke server, hanya simpan link</label>
+<div class="flex gap-2 mt-1 flex-wrap">
+<select id="stSumberVideo" class="border p-2 rounded text-sm"><option value="youtube">YouTube (Utama)</option><option value="drive">Google Drive / MP4 (Cadangan)</option></select>
+<input id="stVideoLink" placeholder="Tempel Link: https://www.youtube.com/watch?v=xxxx" class="border p-2 rounded flex-1" oninput="stimPreviewAdmin()">
+</div>
+<p class="text-xs text-gray-500 mt-1">YouTube / youtu.be / shorts otomatis jadi /embed/. Drive /file/d/ID/view otomatis jadi /file/d/ID/preview. MP4 harus berakhiran .mp4.</p>
+<div id="stPreviewVideo" class="mt-2"></div>
+</div>
+<div id="stWrapTeks" class="border p-3 rounded bg-gray-50 mb-2 hidden">
+<label class="text-sm font-bold">Teks Bacaan / Stimulus Teks Panjang</label>
+<textarea id="stTeks" placeholder="Tempel teks bacaan di sini..." class="w-full border p-2 rounded mt-1" rows="4" oninput="stimPreviewAdmin()"></textarea>
+</div>
+<input type="hidden" id="stEditId" value="">
+<div class="flex gap-2 mt-2 flex-wrap">
+<button onclick="stimSimpan()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Stimulus</button>
+<button onclick="stimResetForm()" class="border px-4 py-2 rounded">Batal / Reset</button>
+<button onclick="stimPreviewAdmin()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold">Preview</button>
+<span id="stMsg" class="text-sm"></span>
+</div>
+<div class="mt-3 border-2 border-orange-300 rounded bg-orange-50 p-3"><b class="text-sm text-orange-700">Preview Stimulus</b><div id="stPreviewBox" class="bg-white p-3 rounded border mt-2 text-sm text-gray-500">Isi stimulus, preview muncul di sini.</div></div>
+</div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Stimulus</h3><div id="stList" class="text-sm">Pilih paket dulu</div></div>
+</div>
+
 <!-- TAB 4 NILAI -->
 <div id="viewNilai" class="hidden">
 <div class="bg-white p-4 rounded shadow mb-4">
@@ -185,15 +245,15 @@ function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&l
 function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
 function showTab(t){
  try{
-   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai'];
+   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'];
    for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
    var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
    if(target) target.classList.remove('hidden');
-   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai'];
+   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai','tabStimulus'];
    for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
    var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
    if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
-   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan();
+   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan(); if(t==='stimulus'){ stimLoadPaketOptions(); stimRenderList(); }
  }catch(err){ console.error(err); }
 }
 async function loadPaketCheck(){
@@ -295,7 +355,9 @@ async function loadPaketList(){
 }
 async function delPaket(id){
   if(!confirm('Hapus paket & semua soalnya?'))return;
-  await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})});
+  await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JS
+
+ON.stringify({action:'delete_paket',id})});
   await loadPaketList(); await loadPaketCheck(); await loadPaketForSoal(); await loadLaporan();
 }
 </script>
@@ -465,7 +527,9 @@ async function editSoal(id){
     else if(s.tipe==='essay'){ let el=document.getElementById('kunci_essay'); if(el) el.value=(kunci&&kunci[0])||''; }
   }catch(e){ console.error(e); }
   updatePreviewSoal();
-  window.scrollTo({top:0, behavior:'smooth'});
+  window.scrollTo({top:0, behav
+
+ior:'smooth'});
 }
 async function delSoal(id){ if(!confirm('Hapus soal ini?')) return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
 
@@ -630,6 +694,152 @@ function exportNilaiExcel(){
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a'); a.href=url; a.download='rekap_nilai_AP.csv'; a.click();
 }
+</script>
+
+<script>
+// ===== STIMULUS (TAMBAHAN) - pakai /api/stimulus (D1), tidak ubah fungsi lama =====
+let stimCache=[];
+function stimLoadPaketOptions(){
+  var sel=document.getElementById('stPaket'); if(!sel) return;
+  var list=allPaketGlobal||[];
+  if(!list.length){ fetch('/api/siswa?action=paket_list').then(r=>r.json()).then(d=>{ allPaketGlobal=d; stimLoadPaketOptions(); }).catch(()=>{}); return; }
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Pilih Paket</option>'+list.map(p=>'<option value="'+p.id+'">['+escHtml(p.kelas)+'] '+escHtml(p.nama)+'</option>').join('');
+  if(cur) sel.value=cur;
+}
+function stimOnJenisChange(){
+  var j=document.getElementById('stJenis').value;
+  ['Gambar','Audio','Video','Teks'].forEach(function(k){ var el=document.getElementById('stWrap'+k); if(el) el.classList.add('hidden'); });
+  var map={gambar:'Gambar',audio:'Audio',video:'Video',teks:'Teks'};
+  var show=document.getElementById('stWrap'+map[j]); if(show) show.classList.remove('hidden');
+  stimPreviewAdmin();
+}
+function stimUbahLinkVideoKeEmbed(link, sumber){
+  var u=(link||'').trim();
+  if(sumber==='youtube'){
+    var id=''; var m=u.match(/[?&]v=([A-Za-z0-9_-]{6,})/); if(m) id=m[1];
+    if(!id){ var m2=u.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/); if(m2) id=m2[1]; }
+    if(!id){ var m3=u.match(/shorts\/([A-Za-z0-9_-]{6,})/); if(m3) id=m3[1]; }
+    if(!id) return null;
+    return 'https://www.youtube.com/embed/'+id;
+  }
+  if(u.indexOf('drive.google.com/file/d/')>-1){ var d=u.match(/\/d\/([^\/]+)/
+
+); if(d) return 'https://drive.google.com/file/d/'+d[1]+'/preview'; return u; }
+  return u;
+}
+function stimFileToBase64(file){ return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){res(r.result)}; r.onerror=rej; r.readAsDataURL(file); }); }
+function stimPreviewAdmin(){
+  var box=document.getElementById('stPreviewBox'); if(!box) return;
+  var j=document.getElementById('stJenis').value;
+  var dari=document.getElementById('stDari').value, sampai=document.getElementById('stSampai').value;
+  var ket=document.getElementById('stKeterangan').value||'';
+  var head='<div class="text-xs text-gray-500 mb-2">Berlaku Soal '+(dari||'?')+' - '+(sampai||'?')+(ket?' | '+escHtml(ket):'')+'</div>';
+  if(j==='teks'){ box.innerHTML=head+'<div class="whitespace-pre-wrap">'+escHtml(document.getElementById('stTeks').value||'(teks kosong)')+'</div>'; }
+  else if(j==='video'){
+    var link=document.getElementById('stVideoLink').value||'';
+    var src=document.getElementById('stSumberVideo').value;
+    var emb=stimUbahLinkVideoKeEmbed(link, src);
+    if(!link) box.innerHTML=head+'<div class="text-gray-400">Tempel link video dulu.</div>';
+    else if(!emb) box.innerHTML=head+'<div class="text-red-600">Link YouTube tidak valid. Harus mengandung youtube.com / youtu.be.</div>';
+    else box.innerHTML=head+'<iframe src="'+escHtml(emb)+'" class="w-full aspect-video rounded border" allowfullscreen></iframe><div class="text-xs text-gray-400 mt-1">Embed: '+escHtml(emb)+'</div>';
+  }
+  else if(j==='gambar'){
+    var f=document.getElementById('stGambar').files[0];
+    if(f){ stimFileToBase64(f).then(function(b){ box.innerHTML=head+'<img src="'+b+'" class="max-h-64 rounded border">'; }); }
+    else box.innerHTML=head+'<div class="text-gray-400">Pilih gambar dulu.</div>';
+  }
+  else if(j==='audio'){
+    var al=document.getElementById('stAudioLink').value||'';
+    if(al) box.innerHTML=head+'<audio controls src="'+escHtml(al)+'" class="w-full"></audio><div class="text-xs text-gray-400">Link audio: '+escHtml(al)+'</div>';
+    else box.innerHTML=head+'<div class="text-gray-400">Tempel link audio dulu.</div>';
+  }
+}
+async function stimSimpan(){
+  var paket_id=document.getElementById('stPaket').value;
+  var jenis=document.getElementById('stJenis').value;
+  var dari=parseInt(document.getElementById('stDari').value), sampai=parseInt(document.getElementById('stSampai').value);
+  var ket=document.getElementById('stKeterangan').value||'';
+  var editId=document.getElementById('stEditId').value||'';
+  if(!paket_id){ alert('Pilih Paket dulu'); return; }
+  if(!dari||!sampai||sampai<dari){ alert('Isi Soal Dari - Sampai dengan benar (Sampai >= Dari). Bebas range, bukan patokan 5 soal.'); return; }
+  var body={ paket_id: paket_id, jenis: jenis, soal_dari: dari, soal_sampai: sampai, keterangan: ket };
+  if(editId) body.id=editId;
+  try{
+    if(jenis==='gambar'){
+      var fg=document.getElementById('stGambar').files[0];
+      if(!fg && !editId){ alert('Upload gambar dulu'); return; }
+      if(fg){ var b64=await stimFileToBase64(fg); if(b64.length>1400000){ alert('Gambar terlalu besar, max ~1MB. Kecilkan dulu.'); return; } body.file_base64=b64; }
+    }
+    else if(jenis==='audio'){
+      var al=(document.getElementById('stAudioLink').value||'').trim();
+      if(!al){ alert('Tempel link audio dulu'); return; }
+      body.audio_url=al; body.max_putar=parseInt(document.getElementById('stMaxPutar').value||0)||0;
+    }
+    else if(jenis==='video'){
+      var link=(document.getElementById('stVideoLink').value||'').trim();
+      var sumber=document.getElementById('stSumberVideo').value;
+      if(!link){ alert('Tempel link video dulu'); return; }
+      if(sumber==='youtube' && link.indexOf('youtube.com')===-1 && link.indexOf('youtu.be')===-1){ alert('Link YouTube harus mengandung youtube.com atau youtu.be'); return; }
+      if(sumber==='drive' && link.indexOf('drive.google.com')===-1 && !/\.mp4(\?.*)?$/i.test(link)){ alert('Untuk sumber Drive/MP4: pakai link Google Drive atau link berakhiran .mp4'); return; }
+      var emb=stimUbahLinkVideoKeEmbed(link, sumber); if(!emb){ alert('Link video tidak bisa diubah ke embed'); return; }
+      body.video_url=emb; body.video_tipe=sumber;
+    }
+    else if(jenis==='teks'){
+      var tx=document.getElementById('stTeks').value.trim(); if(!tx){ alert('Isi teks bacaan dulu'); return; } body.teks=tx;
+    }
+    var res=await fetch('/api/stimulus',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    var d=await res.json();
+    if(!d.ok){ alert(d.msg||'Gagal simpan stimulus'); return; }
+    document.getElementById('stMsg').innerText='Stimulus tersimpan OK';
+    stimResetForm(); stimRenderList();
+  }catch(e){ alert('Gagal simpan stimulus: '+e.message); }
+}
+async function stimRenderList(){
+  var el=document.getElementById('stList'); if(!el) return;
+  var pid=document.getElementById('stPaket')?document.getElementById('stPaket').value:'';
+  if(!pid){ el.innerHTML='Pilih paket dulu'; return; }
+  try{
+    var res=await fetch('/api/stimulus?paket_id='+encodeURIComponent(pid));
+    var all=await res.json(); if(!Array.isArray(all)) all=[];
+    stimCache=all;
+    if(!all.length){ el.innerHTML='Belum ada stimulus untuk paket ini.'; return; }
+    el.innerHTML=all.map(function(s){
+      var thumb='';
+      if(s.jenis==='gambar') thumb='<img src="'+escHtml(s.file_url||'')+'" class="h-12 w-20 object-cover rounded border inline-block">';
+      else if(s.jenis==='video') thumb='<span class="text-xs bg-red-100 px-2 py-1 rounded">Video</span>';
+      else if(s.jenis==='audio') thumb='<span class="text-xs bg-blue-100 px-2 py-1 rounded">Audio</span>';
+      else thumb='<span class="text-xs bg-green-100 px-2 py-1 rounded">Teks</span>';
+      return '<div class="flex justify-between gap-2 border-b py-2 items-center"><span>'+thumb+' <b>'+escHtml(s.jenis)+'</b> Soal '+s.soal_dari+'-'+s.soal_sampai+' '+(s.keterangan?'| '+escHtml(s.keterangan):'')+(s.max_putar?' | Max: '+s.max_putar+'x':'')+'</span><span class="shrink-0"><button onclick="stimEdit(\''+s.id+'\')" class="text-blue-600 underline">Edit</button> | <button onclick="stimHapus(\''+s.id+'\')" class="text-red-600">Hapus</button></span></div>';
+    }).join('');
+  }catch(e){ el.innerHTML='Gagal memuat stimulus: '+escHtml(e.message); }
+}
+function stimEdit(id){
+  var s=(stimCache||[]).find(function(x){ return String(x.id)===String(id); }); if(!s) return;
+  document.getElementById('stEditId').value=s.id;
+  document.getElementById('stPaket').value=s.paket_id;
+  document.getElementById('stJenis').value=s.jenis;
+  document.getElementById('stDari').value=s.soal_dari; document.getElementById('stSampai').value=s.soal_sampai;
+  document.getElementById('stKeterangan').value=s.keterangan||'';
+  if(document.getElementById('stMaxPutar')) document.getElementById('stMaxPutar').value=s.max_putar||0;
+  stimOnJenisChange();
+  if(s.jenis==='teks') document.getElementById('stTeks').value=s.teks||'';
+  if(s.jenis==='video') document.getElementById('stVideoLink').value=s.video_url||'';
+  if(s.jenis==='audio') document.getElementById('stAudioLink').value=s.video_url||'';
+  document.getElementById('stMsg').innerText='Mode EDIT stimulus '+s.id+' - gambar lama tetap dipakai jika tidak upload ulang';
+  stimPreviewAdmin();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function stimHapus(id){ if(!confirm('Hapus stimulus ini?')) return; await fetch('/api/stimulus?id='+encodeURIComponent(id),{method:'DELETE'}); stimRenderList(); }
+function stimResetForm(){
+  document.getElementById('stEditId').value='';
+  ['stDari','stSampai','stKeterangan','stTeks','stVideoLink','stAudioLink'].forEach(function(i){ var e=document.getElementById(i); if(e) e.value=''; });
+  var g=document.getElementById('stGambar'); if(g) g.value='';
+  if(document.getElementById('stMaxPutar')) document.getElementById('stMaxPutar').value='0';
+  document.getElementById('stMsg').innerText='';
+  stimOnJenisChange();
+}
+document.getElementById('stPaket')?.addEventListener('change', stimRenderList);
 </script>
 </body>
 </html>
