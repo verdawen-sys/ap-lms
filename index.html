@@ -64,6 +64,7 @@
 </div>
 </div>
 <div class="bg-white p-5">
+<div id="stimBox" class="mb-4"></div>
 <div id="qText" class="font-medium mb-4 text-[15px]"></div>
 <img id="qImg" class="hidden max-w-full mb-3 rounded border">
 <div id="qOpsi" class="space-y-2"></div>
@@ -79,6 +80,14 @@
 </div>
 <div class="bg-white p-4 mt-2">
 <div id="numberBar" class="flex flex-wrap gap-2"></div>
+</div>
+<!-- STIMULUS STICKY PLAYER - TAMBAHAN, di dalam quizView jadi ikut tersembunyi saat quizView hidden -->
+<div id="stimSticky" class="hidden sticky bottom-0 z-50 bg-white border-t-2 border-orange-400 p-3 shadow-lg">
+<div class="flex justify-between items-center gap-2">
+<span id="stimStickyLabel" class="text-xs font-bold text-orange-700"></span>
+<span id="stimStickySisa" class="text-xs text-gray-500"></span>
+</div>
+<div id="stimStickyPlayer" class="mt-1"></div>
 </div>
 </div>
 
@@ -187,7 +196,9 @@ async function loadPaket(){
  filtered.forEach(p=>{ let key=p.mapel||'Lainnya'; if(!groups[key]) groups[key]=[]; groups[key].push(p); });
  _lastMapelKeys=Object.keys(groups).sort();
  let html="";
- _lastMapelKeys.forEach(mapel=>{
+ _lastMapelKeys.forEach(mape
+
+l=>{
    let list=groups[mapel];
    let isOpen=_mapelTerbuka[mapel]!==false;
    let inner=list.map(p=>`<div class="bg-white p-4 rounded border hover:shadow cursor-pointer" onclick="startPaket(${p.id})">
@@ -218,6 +229,8 @@ async function startPaket(id){
  if(!paketAktif) return;
  let resSoal=await fetch('/api/soal?paket_id='+id);
  soalList=await resSoal.json();
+ soalList.forEach((s,i)=>{ s._stimNo=i+1; }); // TAMBAHAN: nomor asli sebelum diacak, untuk cocokkan range stimulus
+ stimLoad(id); // TAMBAHAN: muat stimulus paket ini
  if(soalList.length==0){alert('Paket ini belum ada soal');return;}
  startTime=new Date().toISOString();
  _klikJodohDipilih=null;
@@ -255,6 +268,7 @@ function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.fl
 
 function renderSoal(){
  let s=soalList[curIdx];
+ stimTampil(); // TAMBAHAN: tampilkan stimulus untuk soal ini
  document.getElementById('breadcrumb').innerText=`/${paketAktif.kelas}/${paketAktif.mapel}/${paketAktif.bab}/${paketAktif.nama}/`;
  document.getElementById('qCounter').innerText=`Soal ${curIdx+1}/${soalList.length}`;
  document.getElementById('progressBar').style.width=((curIdx+1)/soalList.length*100)+'%';
@@ -402,7 +416,9 @@ function renderJodohSiswa(s, container){
       ${kananAcak.map(item=>{
         let dipakai=ans.includes(item.orig);
         let dipilih=_klikJodohDipilih===item.orig;
-        return `<div class="drag-item border p-2 rounded text-sm ${dipakai?'opacity-40':''} ${dipilih?'jodoh-dipilih':''}" draggable="${!locked[curIdx] &&!dipakai}" ondragstart="dragJodoh(event,${item.orig})" onclick="klikJodoh(${item.orig})">${String.fromCharCode(97+item.orig)}. ${escHtml(item.teks)}</div>`;
+        return `<div class="drag-item border p-2 rounded text-sm ${dipakai?'opacity-40':''} ${dipilih?'jodoh-dipilih':''}" draggable="${!locked[curIdx] &&
+
+!dipakai}" ondragstart="dragJodoh(event,${item.orig})" onclick="klikJodoh(${item.orig})">${String.fromCharCode(97+item.orig)}. ${escHtml(item.teks)}</div>`;
       }).join('')}
     </div>
   </div>
@@ -605,6 +621,72 @@ function goHome(){
  loadPaket();
 }
 initHome();
+</script>
+
+<script>
+// ===== STIMULUS SISWA (TAMBAHAN) - pakai /api/stimulus, tidak ubah fungsi lama =====
+let stimList=[], stimPlayCount={};
+async function stimLoad(paketId){
+  stimList=[]; stimPlayCount={};
+  try{
+    let r=await fetch('/api/stimulus?paket_id='+encodeURIComponent(paketId));
+    let d=await r.json(); if(Array.isArray(d)) stimList=d;
+  }catch(e){ stimList=[]; }
+}
+function stimCari(no){
+  for(let i=0;i<stimList.length;i++){ let s=stimList[i]; if(no>=Number(s.soal_dari) && no<=Number(s.soal_sampai)) return s; }
+  return null;
+}
+function stimAudioSrc(u){
+  u=String(u||'').trim();
+  let m=u.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
+  if(m) return 'https://drive.google.com/uc?export=download&id='+m[1];
+  return u;
+}
+function stimTampil(){
+  let box=document.getElementById('stimBox'); if(!box) return;
+  let sticky=document.getElementById('stimSticky'); if(sticky) sticky.classList.add('hidden');
+  if(!soalList || !soalList[curIdx]){ box.innerHTML=''; return; }
+  let no=soalList[curIdx]._stimNo || (curIdx+1); // nomor asli, bukan nomor setelah acak
+  let s=stimCari(no);
+  if(!s){ box.innerHTML=''; return; }
+  let head='<div class="text-xs font-bold text-orange-700 mb-2">📎 Stimulus untuk soal ini '+(s.keterangan? ' | '+escHtml(s.keterangan):'')+'</div>';
+  if(s.jenis==='gambar'){
+    let src=String(s.file_url||'');
+    box.innerHTML=head+'<img src="'+escHtml(src)+'" class="max-w-full rounded border">';
+  } else if(s.jenis==='teks'){
+    box.innerHTML=head+'<div class="bg-orange-50 border border-orange-200 rounded p-3 text-sm whitespace-pre-wrap max-h-64 overflow-auto">'+escHtml(s.teks||'')+'</div>';
+  } else if(s.jenis==='video'){
+    box.innerHTML=head+'<iframe src="'+escHtml(s.video_url||'')+'" class="w-full aspect-video rounded border" allowfullscreen></iframe>';
+  } else if(s.jenis==='audio'){
+    let max=Number(s.max_putar||0);
+    let sudah=stimPlayCount[s.id]||0;
+    let sisaTxt = max>0 ? ('Sisa putar: '+(max-sudah)+' dari '+max+'x') : 'Putar bebas';
+    box.innerHTML=head+'<div class="bg-blue-50 border border-blue-200 rounded p-3 text-sm">🔊 <b>Audio</b> — dengarkan lewat player di bawah layar. '+escHtml(sisaTxt)+'</div>';
+    if(sticky){
+      sticky.classList.remove('hidden');
+      document.getElementById('stimStickyLabel').innerText='🔊 Audio Stimulus'+(s.keterangan?' | '+s.keterangan:'');
+      document.getElementById('stimStickySisa').innerText=sisaTxt;
+      let player=document.getElementById('stimStickyPlayer');
+      if(max>0 && sudah>=max){
+        player.innerHTML='<div class="text-sm text-red-600 font-bold">🔒 Batas putar habis ('+max+'x). Audio terkunci.</div>';
+      } else {
+        player.innerHTML='<audio id="stimAudio" controls controlsList="nodownload" class="w-full" src="'+escHtml(stimAudioSrc(s.video_url))+'"></audio>';
+        let au=document.getElementById('stimAudio');
+        if(au){
+          au.addEventListener('ended', function(){
+            stimPlayCount[s.id]=(stimPlayCount[s.id]||0)+1;
+            stimTampil();
+          });
+          au.addEventListener('play', function(){
+            if(max>0 && (stimPlayCount[s.id]||0)>=max){ au.pause(); alert('Batas putar habis ('+max+'x).'); }
+          });
+        }
+      }
+    }
+  } else { box.innerHTML=''; }
+  if(window.renderRich) { try{ renderRich(box); }catch(e){} }
+}
 </script>
 </body>
 </html>
