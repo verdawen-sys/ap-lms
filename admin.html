@@ -322,7 +322,7 @@ async function addMapel(){
  let nama=prompt('Nama Mapel baru:');
  if(!nama) return;
  let kelas=document.getElementById('pKelas').value||'SMA10';
- await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kelas:kelas,mapel:nama,bab:'Umum'})});
+ await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:nama,bab:'Umum'})});
  alert('Mapel '+nama+' ditambahkan!'); loadManifest();
 }
 async function addBab(){
@@ -330,7 +330,7 @@ async function addBab(){
  if(!nama) return;
  let kelas=document.getElementById('pKelas').value||'SMA10';
  let mapel=document.getElementById('pMapel').value||'Umum';
- await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kelas:kelas,mapel:mapel,bab:nama})});
+ await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:mapel,bab:nama})});
  alert('Bab '+nama+' ditambahkan!'); loadManifest();
 }
 document.getElementById('pKelas').addEventListener('change',loadManifest);
