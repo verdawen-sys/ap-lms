@@ -216,8 +216,9 @@ async function startPaket(id){
  paketAktif=all.find(p=>p.id==id);
  if(!paketAktif) return;
  let resSoal=await fetch('/api/soal?paket_id='+id);
- soalList=await resSoal.json();
- soalList.forEach((s,i)=>{ s._stimNo=i+1; }); // TAMBAHAN: nomor asli sebelum diacak, untuk cocokkan range stimulus
+let jSoal=await resSoal.json();
+soalList = Array.isArray(jSoal) ? jSoal : (jSoal.data || []);
+soalList.forEach((s,i)=>{ s._stimNo=i+1 });
  stimLoad(id); // TAMBAHAN: muat stimulus paket ini
  if(soalList.length==0){alert('Paket ini belum ada soal');return;}
  startTime=new Date().toISOString();
