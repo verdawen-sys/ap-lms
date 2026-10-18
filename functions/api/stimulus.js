@@ -39,9 +39,11 @@ export async function onRequest(context) {
 
   const action = body.action || (request.method === "DELETE" ? "delete" : request.method === "PUT" ? "update" : "create");
 
-  // ----- DELETE -----
+    // ----- DELETE -----
+  // Terima id dari URL (?id=1) ATAU dari body ({id:1})
+  // Karena admin.html kirim lewat URL
   if (action === "delete") {
-    const id = Number(body.id);
+    const id = Number(url.searchParams.get("id") || body.id);
     if (!id) return json({ ok: false, msg: "id wajib" }, 400);
     await db.prepare("DELETE FROM stimulus WHERE id = ?").bind(id).run();
     return json({ ok: true });
