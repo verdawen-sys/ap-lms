@@ -137,8 +137,19 @@ function parseJSONSafe(v, fallback){ try{ return JSON.parse(v); }catch(e){ retur
 function getOpsi(s){ 
   let o=parseJSONSafe(s.opsi, []); 
   if(!Array.isArray(o)) return [];
-  // Filter opsi kosong biar E tidak muncul kalau tidak diisi
-  return o.filter(v=> v && String(v).trim() !== '' && String(v).trim().toLowerCase() !== '-'); 
+  let og=parseJSONSafe(s.opsi_gambar, []);
+  if(!Array.isArray(og)) og=[];
+  let result=[];
+  for(let i=0;i<o.length;i++){
+    let v=o[i];
+    let hasImg = og[i] && String(og[i]).trim()!=='';
+    let hasTxt = v && String(v).trim()!=='' && String(v).trim().toLowerCase()!=='-';
+    if(hasTxt || hasImg) result.push(v||'');
+  }
+  if(result.length===0 && og.some(x=>x && String(x).trim()!=='')) {
+    return o.map(v=>v||'');
+  }
+  return result;
 }
 function getKunci(s){ let k=parseJSONSafe(s.kunci, []); return Array.isArray(k)? k : [k]; }
 function parseJodoh(s){
