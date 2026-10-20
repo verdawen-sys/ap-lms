@@ -140,8 +140,12 @@
 </div>
 </div>
 <div class="mt-3">
-<label class="text-sm font-bold">Pembahasan + Gambar:</label>
-<div class="flex gap-2 mb-1"><input type="file" id="sPembahasanGambar" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-sm"><span class="text-xs">Opsional</span></div>
+<label class="text-sm font-bold">Pembahasan + Gambar (bisa 4 gambar, gratis base64):</label>
+<div class="flex gap-2 mb-1">
+  <input type="file" id="sPembahasanGambar" accept="image/*" multiple class="border p-1 rounded text-sm">
+  <span class="text-xs">Pilih banyak, otomatis dikompres jadi kecil</span>
+</div>
+<div id="previewPembahasan" class="flex flex-wrap gap-2 mt-2"></div>
 <textarea id="sPembahasan" placeholder="Pembahasan. Bisa pakai rumus \(...\) / \(\ce{...}\) / ayat Quran berharakat" class="w-full border p-2 rounded h-16" oninput="updatePreviewSoal()"></textarea>
 </div>
 <div class="flex gap-2 mt-3 flex-wrap">
@@ -438,6 +442,55 @@ function resetFormSoal(){
 }
 function batalEditSoal(){ resetFormSoal(); document.getElementById('soalMsg').innerText=''; }
 
+// --- FIX PEMBAHASAN MULTI GAMBAR BASE64 GRATIS ---
+let pembahasanImages = [];
+
+async function compressImage(file, maxWidth=900, quality=0.6){
+  return new Promise(res=>{
+    let img = new Image();
+    img.onload = ()=>{
+      let canvas = document.createElement('canvas');
+      let scale = Math.min(1, maxWidth / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      res(canvas.toDataURL('image/webp', quality));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{
+  let files = Array.from(e.target.files).slice(0,4);
+  for(let f of files){
+    if(f.size>8*1024*1024) continue;
+    let b64 = await compressImage(f);
+    // b64 100-150KB saja, bukan 3MB
+    pembahasanImages.push(b64);
+  }
+  renderPreviewPembahasan();
+  e.target.value='';
+});
+
+function renderPreviewPembahasan(){
+  let box=document.getElementById('previewPembahasan');
+  if(!box) return;
+  box.innerHTML=pembahasanImages.map((src,i)=>`
+    <div class="relative border rounded p-1 bg-white">
+      <img src="${src}" class="w-20 h-20 object-cover rounded">
+      <button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button>
+    </div>
+  `).join('');
+}
+
+// reset saat ganti soal
+const oldReset = resetFormSoal;
+resetFormSoal = function(){
+  pembahasanImages=[];
+  let b=document.getElementById('previewPembahasan'); if(b) b.innerHTML='';
+  oldReset();
+}
+ 
 async function saveSoal(tambahLagi){
  let btnS=document.getElementById('btnSimpanSoal'); let btnT=document.getElementById('btnTambahSoal');
  let paket_id=document.getElementById('sPaket').value;
@@ -468,7 +521,16 @@ async function saveSoal(tambahLagi){
   fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
   let file=document.getElementById('sGambar').files[0]; if(file) fd.append('gambar_file',file);
   for(let i=0;i<5;i++){ let fg=document.getElementById('gambar_opsi_'+i); if(fg&&fg.files[0]) fd.append('gambar_opsi_'+i, fg.files[0]); }
-  let fb=document.getElementById('sPembahasanGambar'); if(fb&&fb.files[0]) fd.append('gambar_pembahasan', fb.files[0]);
+  // kirim sebagai JSON array base64, tetap gratis, tidak perlu /api/cdn
+if(pembahasanImages.length>0){
+  fd.append('pembahasan_gambar', JSON.stringify(pembahasanImages));
+} else {
+  // kalau edit dan tidak ganti gambar, jangan kirim apa-apa biar gambar lama tetap
+  let existing = window._lastSoal?.find(x=>x.id==document.getElementById('sEditId').value)?.pembahasan_gambar;
+  if(existing && !document.getElementById('sEditId').value) {
+    // new soal no image
+  }
+}
 
   let res=await fetch('/api/soal',{method:'POST',body:fd});
   let d=await res.json();
