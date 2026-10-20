@@ -134,7 +134,12 @@ function getMotivasi(paket){
 function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
 function parseJSONSafe(v, fallback){ try{ return JSON.parse(v); }catch(e){ return fallback; } }
-function getOpsi(s){ let o=parseJSONSafe(s.opsi, []); return Array.isArray(o)? o : []; }
+function getOpsi(s){ 
+  let o=parseJSONSafe(s.opsi, []); 
+  if(!Array.isArray(o)) return [];
+  // Filter opsi kosong biar E tidak muncul kalau tidak diisi
+  return o.filter(v=> v && String(v).trim() !== '' && String(v).trim().toLowerCase() !== '-'); 
+}
 function getKunci(s){ let k=parseJSONSafe(s.kunci, []); return Array.isArray(k)? k : [k]; }
 function parseJodoh(s){
   let kunci=getKunci(s); let opsi=getOpsi(s);
