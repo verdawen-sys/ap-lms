@@ -343,48 +343,52 @@ function renderSoal(){
    });
  }
 
+ // --- FIX FINAL: GAMBAR OPSI A-E & PEMBAHASAN MULTI BASE64 GRATIS ---
  try{
-   let og = s.opsi_gambar? JSON.parse(s.opsi_gambar) : null;
-   if(og && Array.isArray(og)){
-     og.forEach((g,i)=>{
-       if(g && container.children[i]){
-         let img=document.createElement('img');
-         img.src=String(g).startsWith('data:')? g : '/api/cdn/'+g;
-         img.className='max-w-full mt-1 rounded border';
-         container.children[i].appendChild(img);
-       }
-     });
-   }
- }catch(e){}
+   let og = parseJSONSafe(s.opsi_gambar, []);
+   if(!Array.isArray(og)) og = [og];
+   let qOpsiEl = document.getElementById('qOpsi');
+   og.forEach((g,i)=>{
+     if(!g || !qOpsiEl || !qOpsiEl.children[i]) return;
+     // cegah dobel
+     if(qOpsiEl.children[i].querySelector('img')) return;
+     let img=document.createElement('img');
+     let src=String(g).trim();
+     img.src = src.startsWith('data:') ? src : (src.startsWith('/api/cdn/')||src.startsWith('/') ? src : '/api/cdn/'+src);
+     img.className='max-w-full mt-2 rounded border block';
+     qOpsiEl.children[i].appendChild(img);
+   });
+ }catch(e){ console.log('opsi gambar err',e); }
 
  if(locked[curIdx] && bolehTampilBahas()){
    document.getElementById('lockedBox').classList.remove('hidden');
-let pbImg=document.getElementById('pembahasanImg');
-let pbContainer=pbImg.parentElement;
-pbContainer.querySelectorAll('.pb-multi').forEach(el=>el.remove());
+   let pbImg=document.getElementById('pembahasanImg');
+   let pbContainer=pbImg.parentElement;
+   pbContainer.querySelectorAll('.pb-multi').forEach(el=>el.remove());
 
-let imgs=[];
-try{
-  let raw=s.pembahasan_gambar;
-  if(raw){
-    try{ let parsed=JSON.parse(raw); imgs=Array.isArray(parsed)?parsed:[parsed]; }
-    catch{ imgs=[raw]; }
-  }
-}catch{}
-imgs=imgs.filter(v=>v && String(v).trim()!=='' && String(v).trim()!=='[]');
+   let imgs=[];
+   try{
+     let raw=s.pembahasan_gambar;
+     if(raw){
+       try{ let parsed=JSON.parse(raw); imgs=Array.isArray(parsed)?parsed:[parsed]; }
+       catch{ imgs=[raw]; }
+     }
+   }catch{}
+   imgs=imgs.filter(v=>v && String(v).trim()!=='' && String(v).trim()!=='[]');
 
-if(imgs.length>0){
-  pbImg.classList.add('hidden');
-  imgs.forEach(src=>{
-    let finalSrc=String(src).trim();
-    if(!finalSrc || finalSrc==='[]') return;
-    let im=document.createElement('img');
-    im.src=finalSrc.startsWith('data:')?finalSrc:('/api/cdn/'+finalSrc);
-    im.className='pb-multi max-w-full rounded border mt-2';
-    pbContainer.appendChild(im);
-  });
-} else pbImg.classList.add('hidden');
-   
+   if(imgs.length>0){
+     pbImg.classList.add('hidden');
+     imgs.forEach(src=>{
+       let im=document.createElement('img');
+       let ssrc=String(src).trim();
+       im.src = ssrc.startsWith('data:') ? ssrc : (ssrc.startsWith('/api/cdn/')||ssrc.startsWith('/') ? ssrc : '/api/cdn/'+ssrc);
+       im.className='pb-multi max-w-full rounded border mt-2 block';
+       pbContainer.appendChild(im);
+     });
+   } else {
+     pbImg.classList.add('hidden');
+   }
+  
    if(tipe==='menjodohkan'){
      document.getElementById('lockedInfo').innerText=`Terkunci: Menjodohkan - Cek pasangan benar di bawah`;
      let j=parseJodoh(s);
