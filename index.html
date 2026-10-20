@@ -348,11 +348,32 @@ function renderSoal(){
 
  if(locked[curIdx] && bolehTampilBahas()){
    document.getElementById('lockedBox').classList.remove('hidden');
-   let pbImg=document.getElementById('pembahasanImg');
-   if(s.pembahasan_gambar){
-     pbImg.src=String(s.pembahasan_gambar).startsWith('data:')? s.pembahasan_gambar : '/api/cdn/'+s.pembahasan_gambar;
-     pbImg.classList.remove('hidden');
-   } else pbImg.classList.add('hidden');
+let pbImg=document.getElementById('pembahasanImg');
+let pbContainer=pbImg.parentElement;
+pbContainer.querySelectorAll('.pb-multi').forEach(el=>el.remove());
+
+let imgs=[];
+try{
+  let raw=s.pembahasan_gambar;
+  if(raw){
+    try{ let parsed=JSON.parse(raw); imgs=Array.isArray(parsed)?parsed:[parsed]; }
+    catch{ imgs=[raw]; }
+  }
+}catch{}
+imgs=imgs.filter(v=>v && String(v).trim()!=='' && String(v).trim()!=='[]');
+
+if(imgs.length>0){
+  pbImg.classList.add('hidden');
+  imgs.forEach(src=>{
+    let finalSrc=String(src).trim();
+    if(!finalSrc || finalSrc==='[]') return;
+    let im=document.createElement('img');
+    im.src=finalSrc.startsWith('data:')?finalSrc:('/api/cdn/'+finalSrc);
+    im.className='pb-multi max-w-full rounded border mt-2';
+    pbContainer.appendChild(im);
+  });
+} else pbImg.classList.add('hidden');
+   
    if(tipe==='menjodohkan'){
      document.getElementById('lockedInfo').innerText=`Terkunci: Menjodohkan - Cek pasangan benar di bawah`;
      let j=parseJodoh(s);
