@@ -184,10 +184,20 @@ function initHome(){
  else {document.getElementById('loginView').classList.remove('hidden');}
 }
 async function loadPaket(){
- let res=await fetch('/api/siswa?action=paket_list');
- let allPaket=await res.json();
- let aktif=[];
- try{aktif=JSON.parse(siswa.paket_aktif||'[]');}catch(e){aktif=[];}
+try{
+  let rS=await fetch('/api/siswa?action=info&username='+encodeURIComponent(siswa.username)+'&t='+Date.now());
+  let dS=await rS.json();
+  if(dS && dS.ok && dS.data){
+    siswa=dS.data;
+    localStorage.setItem('ap_siswa', JSON.stringify(siswa));
+  }
+}catch(e){}
+let res=await fetch('/api/siswa?action=paket_list&t='+Date.now());
+let data=await res.json();
+allPaket=data||[];
+let aktif=[];
+try{ aktif=JSON.parse(siswa.paket_aktif||'[]'); }catch(e){ aktif=[]; }
+ 
  let filtered = aktif.length>0? allPaket.filter(p=>aktif.includes(p.id) || aktif.includes(p.id.toString())) : allPaket;
  if(filtered.length==0 && aktif.length==0) filtered=allPaket;
  let cari=(document.getElementById('cariPaket')?.value||'').toLowerCase();
