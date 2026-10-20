@@ -22,6 +22,13 @@ export async function onRequest(context) {
         const res = await db.prepare(`SELECT * FROM paket ORDER BY id DESC`).all();
         return json(res.results || []);
       }
+            if (action === 'info') {
+        const username = url.searchParams.get('username');
+        if(!username) return json({ ok:false, msg:'username kosong' },400);
+        const row = await db.prepare(`SELECT * FROM siswa WHERE username=?`).bind(username).first();
+        if(!row) return json({ ok:false, msg:'siswa tidak ditemukan' },404);
+        return json({ ok:true, data: row });
+      }
       return json({ ok: true, msg: 'siswa api aktif' });
     }
 
@@ -49,10 +56,27 @@ export async function onRequest(context) {
         await db.prepare(`DELETE FROM siswa WHERE id=?`).bind(id).run();
         return json({ ok: true });
       }
-      if (action === 'add_paket') {
+            if (action === 'add_paket') {
         const { kelas, mapel, bab, jenis, nama: nm, waktu, pembahasan, kode_akses, motivasi, kkm } = body;
         const res = await db.prepare(`INSERT INTO paket (kelas,mapel,bab,jenis,nama,waktu,pembahasan,kode_akses,motivasi,kkm) VALUES (?,?,?,?,?,?,?,?,?,?)`).bind(kelas, mapel, bab, jenis, nm, waktu || 0, pembahasan || 'langsung', kode_akses || '', motivasi || '', kkm || 75).run();
         await db.prepare(`INSERT OR IGNORE INTO manifest (kelas,mapel,bab) VALUES (?,?,?)`).bind(kelas, mapel, bab).run();
+        
+        // AUTO AKTIFKAN UNTUK SEMUA SISWA - INI YANG HILANG
+        try{
+          const newId = res.meta.last_row_id;
+          const allSiswa = await db.prepare(`SELECT id, paket_aktif FROM siswa`).all();
+          for(const s of (allSiswa.results || [])){
+            try{
+              let arr = JSON.parse(s.paket_aktif || '[]');
+              if(!Array.isArray(arr)) arr=[];
+              if(!arr.map(x=>String(x)).includes(String(newId))){
+                arr.push(newId);
+                await db.prepare(`UPDATE siswa SET paket_aktif=? WHERE id=?`).bind(JSON.stringify(arr), s.id).run();
+              }
+            }catch(e){}
+          }
+        }catch(e){}
+
         return json({ ok: true, id: res.meta.last_row_id });
       }
       if (action === 'edit_paket') {
