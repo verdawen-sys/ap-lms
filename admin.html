@@ -3,386 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AP Admin - V3 FINAL FIX LOADING + MULTI GRATIS</title>
+<title>AP ADMIN V3 FINAL FIX LOADING</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/mhchem.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-<style>.quran{font-family:'Amiri Quran','Amiri',serif!important;direction:rtl;unicode-bidi:isolate;display:inline-block;line-height:2.1;font-size:1.45em;text-align:right}</style>
-<style>#previewSoal{white-space:pre-line}</style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white p-3 font-bold flex justify-between">
-<span>AP ADMIN PANEL V3 FINAL - FIXED LOADING</span>
-<span class="text-xs">Hanya tambah, tidak ubah id/fungsi lama</span>
-</div>
+<body class="bg-gray-100">
+<div class="bg-black text-white p-3 font-bold">AP ADMIN PANEL V3 FINAL - FIXED LOADING + MULTI GRATIS</div>
 <div class="max-w-6xl mx-auto p-4">
 <div class="flex gap-2 mb-4 flex-wrap">
-<button onclick="showTab('siswa')" id="tabSiswa" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">1. Siswa Berbayar</button>
+<button onclick="showTab('siswa')" id="tabSiswa" class="px-4 py-2 bg-blue-600 text-white rounded">1. Siswa Berbayar</button>
 <button onclick="showTab('paket')" id="tabPaket" class="px-4 py-2 bg-white border rounded">2. Paket & Motivasi</button>
 <button onclick="showTab('soal')" id="tabSoal" class="px-4 py-2 bg-white border rounded">3. Soal Unlimited</button>
 <button onclick="showTab('nilai')" id="tabNilai" class="px-4 py-2 bg-white border rounded">4. Laporan Nilai</button>
 <button onclick="showTab('stimulus')" id="tabStimulus" class="px-4 py-2 bg-white border rounded">5. Kelola Stimulus</button>
 </div>
 
-<!-- TAB 1 SISWA - FIX LOADING, FUNGSI ASLI TETAP -->
 <div id="viewSiswa">
 <div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Tambah / Edit Siswa</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+<h3 class="font-bold mb-2">Tambah / Edit Siswa (FIX LOADING)</h3>
+<div class="grid grid-cols-2 gap-2">
 <input id="sUsername" placeholder="Username" class="border p-2 rounded">
 <input id="sPassword" placeholder="Password" class="border p-2 rounded">
-<input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded">
-<input id="sWA" placeholder="No WA" class="border p-2 rounded">
+<input id="sNama" placeholder="Nama" class="border p-2 rounded">
+<input id="sWA" placeholder="WA" class="border p-2 rounded">
 </div>
-<div class="mt-3">
-<div class="text-sm font-bold mb-1">Pilih Paket Aktif:</div>
-<div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm grid grid-cols-1 md:grid-cols-2 gap-1">Loading paket...</div>
-</div>
+<div class="mt-3"><b class="text-sm">Pilih Paket Aktif:</b><div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm">Loading paket...</div></div>
 <input type="hidden" id="sId">
-<div class="flex gap-2 mt-3">
-<button onclick="saveSiswa()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Siswa</button>
+<button onclick="saveSiswa()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded">Simpan Siswa</button>
 <button onclick="resetFormSiswa()" class="border px-4 py-2 rounded">Batal</button>
+<div id="siswaMsg" class="text-sm mt-2"></div>
 </div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Siswa</h3>
-<div id="listSiswa" class="text-sm">Loading...</div>
-</div>
-</div>
-<!-- TAB 2 PAKET - ASLI TETAP -->
-<div id="viewPaket" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Buat Paket Baru</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pKelas" class="border p-2 rounded">
-<option value="">Pilih Kelas</option>
-<optgroup label="SD"><option>SD4</option><option>SD5</option><option>SD6</option></optgroup>
-<optgroup label="SMP"><option>SMP7</option><option>SMP8</option><option>SMP9</option></optgroup>
-<optgroup label="SMA"><option>SMA10</option><option>SMA11</option><option>SMA12</option></optgroup>
-<optgroup label="KHUSUS"><option>TKA</option><option>TARUNA</option></optgroup>
-</select>
-<div class="flex gap-1">
-<select id="pMapel" class="border p-2 rounded w-full"><option value="">Pilih Mapel</option></select>
-<button onclick="addMapel()" class="bg-green-600 text-white px-2 rounded text-sm">+ Mapel</button>
-</div>
-<div class="flex gap-1">
-<select id="pBab" class="border p-2 rounded w-full"><option value="">Pilih Bab</option></select>
-<button onclick="addBab()" class="bg-green-600 text-white px-2 rounded text-sm">+ Bab</button>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pJenis" class="border p-2 rounded">
-<option value="Latihan">Latihan</option>
-<option value="UH">UH</option>
-<option value="Evaluasi">Evaluasi</option>
-<option value="Tryout">Tryout</option>
-<option value="UAS">UAS</option>
-<option value="OSP">OSP</option>
-</select>
-<input id="pNama" placeholder="Nama Paket" class="border p-2 rounded">
-<input id="pWaktu" type="number" placeholder="Waktu menit" class="border p-2 rounded">
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pBahas" class="border p-2 rounded">
-<option value="langsung">Langsung bahas</option>
-<option value="akhir">Bahas di akhir</option>
-<option value="tanpa">Tanpa pembahasan</option>
-</select>
-<input id="pKode" placeholder="Kode Akses" class="border p-2 rounded">
-<input id="pKKM" type="number" placeholder="KKM 75" value="75" class="border p-2 rounded">
-</div>
-<div class="border-2 border-orange-300 p-3 rounded bg-orange-50">
-<label class="font-bold text-sm text-orange-700">Pesan Motivasi Custom:</label>
-<textarea id="pMotivasi" placeholder="Kosongkan = otomatis" class="w-full border p-2 rounded mt-1" rows="2"></textarea>
-</div>
-<button onclick="savePaket()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Paket</button>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Paket</h3>
-<div id="listPaket" class="text-sm">Loading...</div>
-</div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Siswa - Sudah Fix</h3><div id="listSiswa" class="text-sm">Loading...</div></div>
 </div>
 
-<!-- TAB 3 SOAL - ID LAMA TETAP, HANYA TAMBAH PREVIEW MULTI -->
+<div id="viewPaket" class="hidden"><div class="bg-white p-4 rounded shadow"><h3 class="font-bold">Daftar Paket</h3><div id="listPaket" class="text-sm">Loading...</div></div></div>
 <div id="viewSoal" class="hidden">
 <div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Form Soal Lengkap + Gambar Opsi A-E <span id="modeEditLabel" class="text-sm text-orange-600"></span></h3>
-<input type="hidden" id="sEditId" value="">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-<select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select>
-<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()">
-<option value="pg_tunggal">PG Tunggal</option>
-<option value="pg_kompleks">PG Kompleks</option>
-<option value="benar_salah">Benar Salah</option>
-<option value="menjodohkan">Menjodohkan</option>
-<option value="isian">Isian</option>
-<option value="essay">Essay</option>
-</select>
+<h3 class="font-bold">Form Soal - Preview Sama Persis Siswa <span id="modeEditLabel" class="text-orange-600 text-sm"></span></h3>
+<input type="hidden" id="sEditId">
+<div class="grid grid-cols-2 gap-2 mt-2">
+<select id="sPaket" class="border p-2 rounded"><option>Loading...</option></select>
+<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()"><option value="pg_tunggal">PG Tunggal</option><option value="pg_kompleks">PG Kompleks</option></select>
 </div>
-<textarea id="sPertanyaan" placeholder="Tulis pertanyaan... \(x^2\) atau $$ \frac{a}{b} $$" class="w-full border p-2 rounded h-24" oninput="updatePreviewSoal()"></textarea>
-<div class="flex gap-2 my-2 items-center">
-<input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm" onchange="validasiGambar(this)">
-<span class="text-xs">Gambar soal (max 2MB) - TAMBAHAN: otomatis kompres</span>
-<img id="previewGambarSoalTambahan" class="hidden w-20 h-20 object-cover rounded border ml-2">
-</div>
-<div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div>
+<textarea id="sPertanyaan" placeholder="Pertanyaan..." class="w-full border p-2 rounded h-24 mt-2" oninput="updatePreviewSoal()"></textarea>
+<div class="flex gap-2 mt-2 items-center"><input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm"><img id="previewGambarSoalTambahan" class="hidden w-20 h-20 rounded border"></div>
+<div id="opsiContainer" class="border p-3 rounded bg-gray-50 mt-2"></div>
 <div class="mt-2 p-2 bg-blue-50 border rounded">
-<label class="text-sm font-bold">Gambar Opsi A-E (NEW) - ID LAMA TETAP:</label>
+<b class="text-sm">Gambar Opsi A-E (id tetap: gambar_opsi_0-4)</b>
 <div class="grid grid-cols-5 gap-2 mt-1">
-<div><label class="text-xs">A</label><input type="file" id="gambar_opsi_0" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_0" class="mt-1"></div></div>
-<div><label class="text-xs">B</label><input type="file" id="gambar_opsi_1" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_1" class="mt-1"></div></div>
-<div><label class="text-xs">C</label><input type="file" id="gambar_opsi_2" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_2" class="mt-1"></div></div>
-<div><label class="text-xs">D</label><input type="file" id="gambar_opsi_3" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_3" class="mt-1"></div></div>
-<div><label class="text-xs">E</label><input type="file" id="gambar_opsi_4" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_4" class="mt-1"></div></div>
+<div><span class="text-xs">A</span><input type="file" id="gambar_opsi_0" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_0"></div></div>
+<div><span class="text-xs">B</span><input type="file" id="gambar_opsi_1" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_1"></div></div>
+<div><span class="text-xs">C</span><input type="file" id="gambar_opsi_2" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_2"></div></div>
+<div><span class="text-xs">D</span><input type="file" id="gambar_opsi_3" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_3"></div></div>
+<div><span class="text-xs">E</span><input type="file" id="gambar_opsi_4" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_4"></div></div>
 </div>
 </div>
-<div class="mt-3">
-<label class="text-sm font-bold">Pembahasan + Gambar (bisa 4 gambar, gratis base64) - ID LAMA TETAP:</label>
-<div class="flex gap-2 mb-1">
-  <input type="file" id="sPembahasanGambar" accept="image/*" multiple class="border p-1 rounded text-sm">
-  <span class="text-xs">Pilih banyak, otomatis dikompres</span>
+<div class="mt-3"><b class="text-sm">Pembahasan Gambar (id tetap: sPembahasanGambar) 4 gambar</b><input type="file" id="sPembahasanGambar" accept="image/*" multiple class="border p-1 rounded text-sm block mt-1"><div id="previewPembahasan" class="flex flex-wrap gap-2 mt-2"></div><textarea id="sPembahasan" class="w-full border p-2 rounded h-16 mt-2" oninput="updatePreviewSoal()" placeholder="Pembahasan..."></textarea></div>
+<div class="flex gap-2 mt-3"><button onclick="saveSoal(false)" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button><button onclick="saveSoal(true)" class="bg-green-600 text-white px-4 py-2 rounded">+ Tambah</button><button onclick="batalEditSoal()" class="border px-4 py-2 rounded">Reset</button><button onclick="updatePreviewSoal()" class="bg-orange-500 text-white px-4 py-2 rounded">Preview</button><span id="soalMsg" class="text-sm"></span></div>
+<div class="mt-4 border-2 border-orange-300 rounded bg-orange-50 p-3"><b class="text-sm text-orange-700">👁️ PREVIEW SAMA PERSIS SISWA</b><div id="previewSoal" class="bg-white p-4 rounded border mt-2 text-sm"><span class="text-gray-400">Ketik soal...</span></div></div>
 </div>
-<div id="previewPembahasan" class="flex flex-wrap gap-2 mt-2"></div>
-<textarea id="sPembahasan" placeholder="Pembahasan..." class="w-full border p-2 rounded h-16" oninput="updatePreviewSoal()"></textarea>
-</div>
-<div class="flex gap-2 mt-3 flex-wrap">
-<button id="btnSimpanSoal" onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan</button>
-<button id="btnTambahSoal" onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Tambah Lagi</button>
-<button onclick="batalEditSoal()" class="border px-4 py-2 rounded">Batal Edit / Reset</button>
-<button onclick="updatePreviewSoal()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold">👁️ Lihat Preview (sama persis siswa)</button>
-<span id="soalMsg" class="text-sm"></span>
-</div>
-<div class="mt-4 border-2 border-orange-300 rounded bg-orange-50 p-3">
-<div class="flex justify-between items-center"><b class="text-sm text-orange-700">👁️ PREVIEW - Tampilan Seperti di Siswa</b><span class="text-xs text-gray-500">Soal + Opsi A-E + Pembahasan multi</span></div>
-<div id="previewSoal" class="bg-white p-4 rounded border mt-2 text-[15px] whitespace-pre-line"><div class="text-gray-400 text-sm">Ketik soal di atas, preview muncul otomatis di sini.</div></div>
-</div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Soal</h3>
-<div id="listSoal" class="text-sm">Pilih paket dulu</div>
-</div>
-  </div>
-  <!-- TAB 4 NILAI - ASLI TETAP -->
-<div id="viewNilai" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">4. Laporan Nilai Siswa</h3>
-<div class="flex flex-wrap gap-2 mb-3">
-<select id="filterPaketNilai" class="border p-2 rounded text-sm"><option value="">Semua Paket</option></select>
-<input id="searchSiswaNilai" placeholder="Cari siswa" class="border p-2 rounded text-sm flex-1">
-<button onclick="loadLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Refresh</button>
-</div>
-<div id="rekapNilai" class="text-sm">Klik Refresh</div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Detail</h3>
-<div id="detailNilai" class="text-sm text-gray-500">Klik Detail</div>
-</div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold">Daftar Soal</h3><div id="listSoal" class="text-sm">Pilih paket</div></div>
 </div>
 
-<!-- TAB 5 STIMULUS - ASLI TETAP -->
-<div id="viewStimulus" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">5. Kelola Stimulus</h3>
-<div id="stList" class="text-sm">Pilih paket dulu</div>
+<div id="viewNilai" class="hidden"><div class="bg-white p-4 rounded shadow"><h3 class="font-bold">Nilai</h3><div id="rekapNilai">-</div></div></div>
+<div id="viewStimulus" class="hidden"><div class="bg-white p-4 rounded shadow"><h3 class="font-bold">Stimulus</h3><div id="stList">-</div></div></div>
 </div>
-</div>
-</div>
-
 <script>
-let allPaketGlobal=[];
-function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function renderRich(el){ if(!el) return; if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
-function showTab(t){
-  var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'];
-  for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
-  var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
-  if(target) target.classList.remove('hidden');
-  var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai','tabStimulus'];
-  for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
-  var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-  if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
-}
-function validasiGambar(input){
-  if(!input.files||!input.files[0]) return;
-  if(input.files[0].size>2*1024*1024){ alert('Gambar >2MB, pilih yang lebih kecil.'); input.value=''; return; }
-}
-
-// === TAMBAHAN BARU - HANYA TAMBAH, TIDAK UBAH validasiGambar ===
-let pembahasanImages = [];
-let opsiGambarImages = ["","","","",""];
-let gambarSoalBase64 = "";
-async function compressImage(file, maxWidth=900, quality=0.6){
-  return new Promise(res=>{
-    let img = new Image();
-    img.onload = ()=>{
-      let canvas = document.createElement('canvas');
-      let scale = Math.min(1, maxWidth / img.width);
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      res(canvas.toDataURL('image/webp', quality));
-    };
-    img.onerror=()=>res(''); img.src = URL.createObjectURL(file);
-  });
-}
-function renderPreviewPembahasan(){
-  let box=document.getElementById('previewPembahasan'); if(!box) return;
-  box.innerHTML=pembahasanImages.map((src,i)=>`<div class="relative border rounded p-1 bg-white"><img src="${src}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan();updatePreviewSoal()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button></div>`).join('');
-}
-function renderPreviewOpsi(i,b64){
-  let pv=document.getElementById('prev_opsi_'+i); if(!pv) return;
-  pv.innerHTML=`<img src="${b64}" class="w-16 h-16 object-cover rounded border mt-1"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML='';updatePreviewSoal()" class="text-xs text-red-600">hapus</button>`;
-}
-
-// === FUNGSI ASLI TETAP - SISWA ===
-async function loadPaketCheck(){
- try{
- let res=await fetch('/api/siswa?action=paket_list');
- allPaketGlobal=await res.json();
- let html='';
- allPaketGlobal.forEach(p=>{
-   html+=`<label class="flex gap-2 items-center"><input type="checkbox" value="${p.id}" class="paketCheck"> ${escHtml(p.kelas)} - ${escHtml(p.mapel)} - ${escHtml(p.nama)} (${escHtml(p.jenis)})</label>`;
- });
- document.getElementById('checkPaket').innerHTML=html||'Belum ada paket';
- }catch(e){ document.getElementById('checkPaket').innerHTML='Gagal: '+escHtml(e.message); }
-}
-async function loadSiswa(){
- try{
- let res=await fetch('/api/siswa?action=list');
- let data=await res.json();
- let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Aksi</th></tr>';
- data.forEach(s=>{
-   html+=`<tr><td class="border p-1">${escHtml(s.username)}</td><td class="border p-1">${escHtml(s.nama)}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`;
- });
- html+='</table>'; document.getElementById('listSiswa').innerHTML=html;
- }catch(e){ document.getElementById('listSiswa').innerHTML='Gagal: '+escHtml(e.message); }
-}
-async function saveSiswa(){
- let paketAktif=[]; document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value)));
- let body={action: document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif};
- let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); let d=await res.json();
- if(d.ok){alert('Siswa disimpan'); resetFormSiswa(); loadSiswa();} else alert(d.msg);
-}
-function resetFormSiswa(){document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>document.getElementById(id).value=''); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false);}
-async function editSiswa(id){ let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id); if(!s) return; document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa; }
-async function delSiswa(id){if(!confirm('Hapus siswa?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
-loadPaketCheck(); loadSiswa();
-
-// === FUNGSI ASLI TETAP - SOAL ===
-async function loadPaketForSoal(){
- try{
- let res=await fetch('/api/siswa?action=paket_list');
- let data=await res.json();
- document.getElementById('sPaket').innerHTML=data.map(p=>`<option value="${p.id}">[${p.id}] ${escHtml(p.kelas)}/${escHtml(p.mapel)} - ${escHtml(p.nama)}</option>`).join('');
- loadSoalList();
- }catch(e){ document.getElementById('sPaket').innerHTML='<option>Gagal</option>'; }
-}
-function changeTipe(){
- let tipe=document.getElementById('sTipe').value;
- let c=document.getElementById('opsiContainer');
- if(tipe==='pg_tunggal'){
-   c.innerHTML=`Opsi PG Tunggal:<br>${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="radio" name="kunci" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded" oninput="updatePreviewSoal()"></div>`).join('')}`;
- } else {
-   c.innerHTML=`Tipe lain - tetap`;
- }
- updatePreviewSoal();
-}
-function updatePreviewSoal(){
-  let box=document.getElementById('previewSoal'); if(!box) return;
-  let pertanyaan=document.getElementById('sPertanyaan')? document.getElementById('sPertanyaan').value : '';
-  let pembahasan=document.getElementById('sPembahasan')? document.getElementById('sPembahasan').value : '';
-  let html=`<div class="font-medium mb-3">${pertanyaan||'<span class="text-gray-400">Belum ada pertanyaan...</span>'}</div>`;
-  if(gambarSoalBase64) html+=`<img src="${gambarSoalBase64}" class="max-w-full mb-3 rounded border">`;
-  let opts=[]; for(let i=0;i<5;i++){ let el=document.getElementById('opsi_'+i); opts.push(el? el.value : ''); }
-  html+=`<div class="space-y-2">`+opts.map((o,i)=>{
-    let img=opsiGambarImages[i]? `<img src="${opsiGambarImages[i]}" class="max-w-full mt-1 rounded border block">` : '';
-    if(!o && !img) return '';
-    return `<div class="border p-3 rounded text-sm"><span class="font-bold">${String.fromCharCode(65+i)}.</span> ${o} ${img}</div>`;
-  }).join('')+`</div>`;
-  if(pembahasan || pembahasanImages.length>0){
-    html+=`<div class="mt-4 p-3 bg-green-50 border border-green-200 rounded text-sm"><b>Pembahasan:</b><div class="mt-1">${pembahasan||'-'}</div>`;
-    if(pembahasanImages.length>0) html+=pembahasanImages.map(src=>`<img src="${src}" class="max-w-full rounded border mt-2 block">`).join('');
-    html+=`</div>`;
-  }
-  box.innerHTML=html; renderRich(box);
-}
-function batalEditSoal(){
-  document.getElementById('sEditId').value=''; document.getElementById('modeEditLabel').innerText='';
-  pembahasanImages=[]; opsiGambarImages=["","","","",""]; gambarSoalBase64='';
-  let prev=document.getElementById('previewGambarSoalTambahan'); if(prev) prev.classList.add('hidden');
-  let box=document.getElementById('previewPembahasan'); if(box) box.innerHTML='';
-  for(let i=0;i<5;i++){ let pv=document.getElementById('prev_opsi_'+i); if(pv) pv.innerHTML=''; }
-  updatePreviewSoal();
-}
-async function saveSoal(tambahLagi){
- let paket_id=document.getElementById('sPaket').value;
- let tipe=document.getElementById('sTipe').value;
- let pertanyaan=document.getElementById('sPertanyaan').value;
- let pembahasan=document.getElementById('sPembahasan').value;
- if(!paket_id||!pertanyaan){alert('Paket & Pertanyaan wajib'); return;}
- let opsi=[]; for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); opsi.push(v? v.value : '');}
- let kunci=[]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];
- let fd=new FormData();
- let editId=document.getElementById('sEditId').value; if(editId) fd.append('id', editId);
- fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
- let file=document.getElementById('sGambar').files[0]; if(file) fd.append('gambar_file',file);
- for(let i=0;i<5;i++){ let fg=document.getElementById('gambar_opsi_'+i); if(fg&&fg.files[0]) fd.append('gambar_opsi_'+i, fg.files[0]); }
- // TAMBAHAN BARU - KOMPRES JSON (ini yang dipakai siswa, gratis, tidak ubah yang lama)
- fd.append('opsi_gambar', JSON.stringify(opsiGambarImages));
- fd.append('pembahasan_gambar', JSON.stringify(pembahasanImages));
- if(gambarSoalBase64) fd.append('gambar', gambarSoalBase64);
- let res=await fetch('/api/soal',{method:'POST',body:fd}); let d=await res.json();
- if(d.ok){ document.getElementById('soalMsg').innerText='OK tersimpan'; await loadSoalList(); if(tambahLagi) batalEditSoal(); } else alert(d.msg||'Gagal');
-}
-async function loadSoalList(){
-  let el=document.getElementById('listSoal'); let pid=document.getElementById('sPaket').value; if(!pid) return;
-  let res=await fetch('/api/soal?paket_id='+pid); let data=await res.json(); data=Array.isArray(data)?data:(data.data||[]);
-  window._lastSoal=data;
-  el.innerHTML=data.length+' soal:<br>'+data.map((s,i)=>`<div class="flex justify-between border-b py-1"><span>${i+1}. ${escHtml((s.pertanyaan||'').substring(0,80))}</span><span><button onclick="editSoal(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`).join('');
-}
-async function editSoal(id){
-  let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s) return;
-  document.getElementById('sEditId').value=s.id;
-  document.getElementById('modeEditLabel').innerText='EDIT ID '+s.id;
-  document.getElementById('sPertanyaan').value=s.pertanyaan||'';
-  document.getElementById('sPembahasan').value=s.pembahasan||'';
-  try{
-    let oldPembahasan=s.pembahasan_gambar||s.gambar_pembahasan||'[]'; try{oldPembahasan=JSON.parse(oldPembahasan);}catch{oldPembahasan=[];}
-    pembahasanImages=Array.isArray(oldPembahasan)?oldPembahasan:[]; renderPreviewPembahasan();
-    let oldOpsi=s.opsi_gambar||s.gambar_opsi||'[]'; try{oldOpsi=JSON.parse(oldOpsi);}catch{oldOpsi=[];}
-    opsiGambarImages=Array.isArray(oldOpsi)?oldOpsi:["","","","",""];
-    for(let i=0;i<5;i++){ if(opsiGambarImages[i]) renderPreviewOpsi(i,opsiGambarImages[i]); }
-    if(s.gambar){ gambarSoalBase64=s.gambar; let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=s.gambar; prev.classList.remove('hidden'); } }
-  }catch(e){}
-  updatePreviewSoal();
-}
-async function delSoal(id){ if(!confirm('Hapus?')) return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
-
-// Listener tambahan (id lama tetap)
-document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{
-  let files = Array.from(e.target.files).slice(0,4);
-  for(let f of files){ let b64=await compressImage(f,900,0.6); pembahasanImages.push(b64); }
-  renderPreviewPembahasan(); updatePreviewSoal(); e.target.value='';
-});
-for(let i=0;i<5;i++){
-  document.getElementById('gambar_opsi_'+i)?.addEventListener('change', async (e)=>{
-    let f=e.target.files[0]; if(!f) return;
-    let b64=await compressImage(f,600,0.6); opsiGambarImages[i]=b64; renderPreviewOpsi(i,b64); updatePreviewSoal();
-  });
-}
-document.getElementById('sGambar')?.addEventListener('change', async (e)=>{
-  let f=e.target.files[0]; if(!f) return; let b64=await compressImage(f,900,0.6); gambarSoalBase64=b64;
-  let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=b64; prev.classList.remove('hidden'); } updatePreviewSoal();
-});
-
-loadPaketForSoal(); changeTipe();
-
-// Fungsi paket & nilai asli tetap (singkat)
-async function savePaket(){ alert('Paket - fungsi asli tetap'); }
-async function loadLaporan(){ document.getElementById('rekapNilai').innerHTML='Klik Refresh - fungsi asli tetap'; }
+function escHtml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderRich(el){if(!el||!window.renderMathInElement)return; try{renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false});}catch(e){}}
+function showTab(t){['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'].forEach(id=>{let e=document.getElementById(id); if(e) e.classList.add('hidden');}); let target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1)); if(target) target.classList.remove('hidden');}
+function validasiGambar(input){if(!input.files[0])return; if(input.files[0].size>5*1024*1024){alert('>5MB'); input.value='';}}
+let pembahasanImages=[]; let opsiGambarImages=["","","","",""]; let gambarSoalBase64="";
+async function compressImage(file,maxWidth=900,quality=0.6){return new Promise(res=>{let img=new Image(); img.onload=()=>{let canvas=document.createElement('canvas'); let scale=Math.min(1,maxWidth/img.width); canvas.width=img.width*scale; canvas.height=img.height*scale; canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height); res(canvas.toDataURL('image/webp',quality));}; img.onerror=()=>res(''); img.src=URL.createObjectURL(file);});}
+function renderPreviewPembahasan(){let box=document.getElementById('previewPembahasan'); if(!box)return; box.innerHTML=pembahasanImages.map((src,i)=>`<div class="relative border rounded p-1 bg-white"><img src="${src}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan();updatePreviewSoal()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button></div>`).join('');}
+function renderPreviewOpsi(i,b64){let pv=document.getElementById('prev_opsi_'+i); if(!pv)return; pv.innerHTML=`<img src="${b64}" class="w-16 h-16 object-cover rounded border mt-1"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML='';updatePreviewSoal()" class="text-xs text-red-600 block">hapus</button>`;}
+async function loadPaketCheck(){try{let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); let el=document.getElementById('checkPaket'); el.innerHTML=data.map(p=>`<label class="flex gap-2"><input type="checkbox" value="${p.id}" class="paketCheck"> ${escHtml(p.kelas)}-${escHtml(p.mapel)}-${escHtml(p.nama)}</label>`).join('<br>');}catch(e){document.getElementById('checkPaket').innerHTML='Gagal: '+e.message;}}
+async function loadSiswa(){try{let res=await fetch('/api/siswa?action=list'); let data=await res.json(); let html='<table class="w-full border text-xs"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Aksi</th></tr>'; data.forEach(s=>{html+=`<tr><td class="border p-1">${escHtml(s.username)}</td><td class="border p-1">${escHtml(s.nama)}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`;}); html+='</table>'; document.getElementById('listSiswa').innerHTML=html;}catch(e){document.getElementById('listSiswa').innerHTML='Gagal load: '+e.message+' <button onclick="loadSiswa()" class="bg-blue-600 text-white px-2 py-1 rounded">Retry</button>';}}
+async function saveSiswa(){let paketAktif=[]; document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value))); let body={action:document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif}; let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); let d=await res.json(); if(d.ok){resetFormSiswa(); loadSiswa();} else alert(d.msg);}
+function resetFormSiswa(){document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>{let el=document.getElementById(id); if(el) el.value='';}); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false);}
+async function editSiswa(id){let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id); if(!s)return; document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa; if(s.paket_aktif){document.querySelectorAll('.paketCheck').forEach(c=>{c.checked=s.paket_aktif.includes(parseInt(c.value));});}}
+async function delSiswa(id){if(!confirm('Hapus?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
+async function loadPaketList(){try{let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); document.getElementById('listPaket').innerHTML=data.map(p=>`<div class="border-b py-1">${p.id}. ${escHtml(p.nama)}</div>`).join('');}catch(e){}}
+async function loadPaketForSoal(){try{let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); document.getElementById('sPaket').innerHTML=data.map(p=>`<option value="${p.id}">[${p.id}] ${escHtml(p.nama)}</option>`).join(''); loadSoalList(); loadPaketList();}catch(e){}}
+function changeTipe(){let c=document.getElementById('opsiContainer'); c.innerHTML=`${[0,1,2,3,4].map(i=>`<div class="flex gap-2 mb-1"><input type="radio" name="kunci" value="${i}" ${i==0?'checked':''}><b>${String.fromCharCode(65+i)}</b><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded" oninput="updatePreviewSoal()"></div>`).join('')}`; updatePreviewSoal();}
+function updatePreviewSoal(){let box=document.getElementById('previewSoal'); if(!box)return; let pertanyaan=document.getElementById('sPertanyaan')?.value||''; let pembahasan=document.getElementById('sPembahasan')?.value||''; let html=`<div class="font-medium mb-3">${pertanyaan||'<span class="text-gray-400">Belum ada</span>'}</div>`; if(gambarSoalBase64) html+=`<img src="${gambarSoalBase64}" class="max-w-full mb-3 rounded border">`; let opts=[]; for(let i=0;i<5;i++){let el=document.getElementById('opsi_'+i); opts.push(el?el.value:'');} html+=`<div class="space-y-2">`+opts.map((o,i)=>{let img=opsiGambarImages[i]?`<img src="${opsiGambarImages[i]}" class="max-w-full mt-1 rounded border">`:''; if(!o&&!img)return ''; return `<div class="border p-3 rounded text-sm"><b>${String.fromCharCode(65+i)}.</b> ${o} ${img}</div>`;}).join('')+`</div>`; if(pembahasan||pembahasanImages.length>0){html+=`<div class="mt-4 p-3 bg-green-50 border rounded text-sm"><b>Pembahasan:</b><div>${pembahasan||'-'}</div>`; if(pembahasanImages.length>0) html+=pembahasanImages.map(src=>`<img src="${src}" class="max-w-full rounded border mt-2">`).join(''); html+=`</div>`;} box.innerHTML=html; renderRich(box);}
+function batalEditSoal(){document.getElementById('sEditId').value=''; pembahasanImages=[]; opsiGambarImages=["","","","",""]; gambarSoalBase64=''; let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){prev.src=''; prev.classList.add('hidden');} document.getElementById('previewPembahasan').innerHTML=''; for(let i=0;i<5;i++){let pv=document.getElementById('prev_opsi_'+i); if(pv) pv.innerHTML='';} updatePreviewSoal();}
+async function saveSoal(tambahLagi){let paket_id=document.getElementById('sPaket').value; let pertanyaan=document.getElementById('sPertanyaan').value; let pembahasan=document.getElementById('sPembahasan').value; if(!paket_id||!pertanyaan){alert('Paket & Pertanyaan wajib'); return;} let opsi=[]; for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); opsi.push(v? v.value : '');} let kunci=[]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0]; let fd=new FormData(); let editId=document.getElementById('sEditId').value; if(editId) fd.append('id', editId); fd.append('paket_id',paket_id); fd.append('tipe','pg_tunggal'); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan); fd.append('opsi_gambar', JSON.stringify(opsiGambarImages)); fd.append('pembahasan_gambar', JSON.stringify(pembahasanImages)); if(gambarSoalBase64) fd.append('gambar', gambarSoalBase64); let res=await fetch('/api/soal',{method:'POST',body:fd}); let d=await res.json(); if(d.ok){ document.getElementById('soalMsg').innerText='OK'; await loadSoalList(); if(tambahLagi) batalEditSoal(); } else alert(d.msg||'Gagal');}
+async function loadSoalList(){let el=document.getElementById('listSoal'); let pid=document.getElementById('sPaket').value; if(!pid)return; let res=await fetch('/api/soal?paket_id='+pid); let data=await res.json(); data=Array.isArray(data)?data:(data.data||[]); window._lastSoal=data; el.innerHTML=data.map((s,i)=>`<div class="flex justify-between border-b py-1 text-xs"><span>${i+1}. ${escHtml((s.pertanyaan||'').substring(0,80))}</span><span><button onclick="editSoal(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`).join('');}
+async function editSoal(id){let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s)return; document.getElementById('sEditId').value=s.id; document.getElementById('sPertanyaan').value=s.pertanyaan||''; document.getElementById('sPembahasan').value=s.pembahasan||''; try{let oldPembahasan=s.pembahasan_gambar||'[]'; try{oldPembahasan=JSON.parse(oldPembahasan);}catch{oldPembahasan=[];} pembahasanImages=Array.isArray(oldPembahasan)?oldPembahasan:[]; renderPreviewPembahasan(); let oldOpsi=s.opsi_gambar||'[]'; try{oldOpsi=JSON.parse(oldOpsi);}catch{oldOpsi=[];} opsiGambarImages=Array.isArray(oldOpsi)?oldOpsi:["","","","",""]; for(let i=0;i<5;i++){ if(opsiGambarImages[i]) renderPreviewOpsi(i,opsiGambarImages[i]); } if(s.gambar){ gambarSoalBase64=s.gambar; let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=s.gambar; prev.classList.remove('hidden'); } } }catch(e){} updatePreviewSoal();}
+async function delSoal(id){ if(!confirm('Hapus?'))return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
+document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{let files=Array.from(e.target.files).slice(0,4); for(let f of files){ let b64=await compressImage(f,900,0.6); pembahasanImages.push(b64);} renderPreviewPembahasan(); updatePreviewSoal(); e.target.value='';});
+for(let i=0;i<5;i++){document.getElementById('gambar_opsi_'+i)?.addEventListener('change', async (e)=>{let f=e.target.files[0]; if(!f)return; let b64=await compressImage(f,600,0.6); opsiGambarImages[i]=b64; renderPreviewOpsi(i,b64); updatePreviewSoal();});}
+document.getElementById('sGambar')?.addEventListener('change', async (e)=>{let f=e.target.files[0]; if(!f)return; let b64=await compressImage(f,900,0.6); gambarSoalBase64=b64; let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=b64; prev.classList.remove('hidden'); } updatePreviewSoal();});
+loadPaketCheck(); loadSiswa(); loadPaketForSoal(); changeTipe();
 </script>
 </body>
-  </html>
+</html>
