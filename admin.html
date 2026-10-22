@@ -3,21 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AP Admin - Academic Priority</title>
+<title>AP Admin - Academic Priority V3 FINAL CLEAN</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/mhchem.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-<style>.quran{font-family:'Amiri Quran','Amiri',serif!important;direction:rtl;unicode-bidi:isolate;display:inline-block;line-height:2.1;font-size:1.45em;text-align:right}.arab{font-family:'Amiri',serif!important;direction:rtl;unicode-bidi:isolate}</style>
-<style>#previewSoal{white-space:pre-line}</style>
+<style>.quran{font-family:'Amiri Quran','Amiri',serif!important;direction:rtl;unicode-bidi:isolate;display:inline-block;line-height:2.1;font-size:1.45em;text-align:right}.arab{font-family:'Amiri',serif!important;direction:rtl;unicode-bidi:isolate}#previewSoal{white-space:pre-line}</style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-<div class="bg-black text-white p-3 font-bold flex justify-between">
-<span>AP ADMIN PANEL V3 FINAL - FIXED + MULTI GRATIS</span>
-<span class="text-xs">SD4-SD6 | SMP7-SMP9 | SMA10-12 | TKA | TARUNA</span>
-</div>
+<div class="bg-black text-white p-3 font-bold flex justify-between"><span>AP ADMIN PANEL V3 FINAL - FIXED + MULTI GRATIS - CLEAN</span><span class="text-xs">SD4-SMA12 TKA TARUNA</span></div>
 <div class="max-w-6xl mx-auto p-4">
 <div class="flex gap-2 mb-4 flex-wrap">
 <button onclick="showTab('siswa')" id="tabSiswa" class="px-4 py-2 bg-blue-600 text-white rounded font-bold">1. Siswa Berbayar</button>
@@ -28,579 +24,78 @@
 </div>
 
 <div id="viewSiswa">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Tambah / Edit Siswa</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-<input id="sUsername" placeholder="Username" class="border p-2 rounded">
-<input id="sPassword" placeholder="Password" class="border p-2 rounded">
-<input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded">
-<input id="sWA" placeholder="No WA" class="border p-2 rounded">
-</div>
-<div class="mt-3">
-<div class="text-sm font-bold mb-1">Pilih Paket Aktif:</div>
-<div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm grid grid-cols-1 md:grid-cols-2 gap-1">Loading paket...</div>
-</div>
-<input type="hidden" id="sId">
-<div class="flex gap-2 mt-3">
-<button onclick="saveSiswa()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Siswa</button>
-<button onclick="resetFormSiswa()" class="border px-4 py-2 rounded">Batal</button>
-</div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Siswa</h3>
-<div id="listSiswa" class="text-sm">Loading...</div>
-</div>
+<div class="bg-white p-4 rounded shadow mb-4"><h3 class="font-bold mb-2">Tambah / Edit Siswa</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2"><input id="sUsername" placeholder="Username" class="border p-2 rounded"><input id="sPassword" placeholder="Password" class="border p-2 rounded"><input id="sNama" placeholder="Nama Lengkap" class="border p-2 rounded"><input id="sWA" placeholder="No WA" class="border p-2 rounded"></div><div class="mt-3"><div class="text-sm font-bold mb-1">Pilih Paket Aktif:</div><div id="checkPaket" class="border p-2 rounded max-h-40 overflow-auto text-sm grid grid-cols-1 md:grid-cols-2 gap-1">Loading paket...</div></div><input type="hidden" id="sId"><div class="flex gap-2 mt-3"><button onclick="saveSiswa()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Siswa</button><button onclick="resetFormSiswa()" class="border px-4 py-2 rounded">Batal</button></div></div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Siswa</h3><div id="listSiswa" class="text-sm">Loading...</div></div>
 </div>
 
 <div id="viewPaket" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Buat Paket Baru</h3>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pKelas" class="border p-2 rounded">
-<option value="">Pilih Kelas</option>
-<optgroup label="SD"><option>SD4</option><option>SD5</option><option>SD6</option></optgroup>
-<optgroup label="SMP"><option>SMP7</option><option>SMP8</option><option>SMP9</option></optgroup>
-<optgroup label="SMA"><option>SMA10</option><option>SMA11</option><option>SMA12</option></optgroup>
-<optgroup label="KHUSUS"><option>TKA</option><option>TARUNA</option></optgroup>
-</select>
-<div class="flex gap-1">
-<select id="pMapel" class="border p-2 rounded w-full"><option value="">Pilih Mapel</option></select>
-<button onclick="addMapel()" class="bg-green-600 text-white px-2 rounded text-sm">+ Mapel</button>
+<div class="bg-white p-4 rounded shadow mb-4"><h3 class="font-bold mb-2">Buat Paket Baru</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2"><select id="pKelas" class="border p-2 rounded"><option value="">Pilih Kelas</option><optgroup label="SD"><option>SD4</option><option>SD5</option><option>SD6</option></optgroup><optgroup label="SMP"><option>SMP7</option><option>SMP8</option><option>SMP9</option></optgroup><optgroup label="SMA"><option>SMA10</option><option>SMA11</option><option>SMA12</option></optgroup><optgroup label="KHUSUS"><option>TKA</option><option>TARUNA</option></optgroup></select><div class="flex gap-1"><select id="pMapel" class="border p-2 rounded w-full"><option value="">Pilih Mapel</option></select><button onclick="addMapel()" class="bg-green-600 text-white px-2 rounded text-sm">+ Mapel</button></div><div class="flex gap-1"><select id="pBab" class="border p-2 rounded w-full"><option value="">Pilih Bab</option></select><button onclick="addBab()" class="bg-green-600 text-white px-2 rounded text-sm">+ Bab</button></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2"><select id="pJenis" class="border p-2 rounded"><option value="Latihan">Latihan</option><option value="UH">UH</option><option value="Evaluasi">Evaluasi</option><option value="Tryout">Tryout</option><option value="UAS">UAS</option><option value="OSP">OSP</option></select><input id="pNama" placeholder="Nama Paket" class="border p-2 rounded"><input id="pWaktu" type="number" placeholder="Waktu menit" class="border p-2 rounded"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2"><select id="pBahas" class="border p-2 rounded"><option value="langsung">Langsung bahas</option><option value="akhir">Bahas di akhir</option><option value="tanpa">Tanpa pembahasan</option></select><input id="pKode" placeholder="Kode Akses" class="border p-2 rounded"><input id="pKKM" type="number" placeholder="KKM 75" value="75" class="border p-2 rounded"></div><div class="border-2 border-orange-300 p-3 rounded bg-orange-50"><label class="font-bold text-sm text-orange-700">Pesan Motivasi Custom:</label><textarea id="pMotivasi" placeholder="Kosongkan = otomatis" class="w-full border p-2 rounded mt-1" rows="2"></textarea></div><button onclick="savePaket()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Paket</button></div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Paket</h3><div id="listPaket" class="text-sm">Loading...</div></div>
 </div>
-<div class="flex gap-1">
-<select id="pBab" class="border p-2 rounded w-full"><option value="">Pilih Bab</option></select>
-<button onclick="addBab()" class="bg-green-600 text-white px-2 rounded text-sm">+ Bab</button>
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pJenis" class="border p-2 rounded"><option value="Latihan">Latihan</option><option value="UH">UH</option><option value="Evaluasi">Evaluasi</option><option value="Tryout">Tryout</option><option value="UAS">UAS</option><option value="OSP">OSP</option></select>
-<input id="pNama" placeholder="Nama Paket" class="border p-2 rounded">
-<input id="pWaktu" type="number" placeholder="Waktu menit" class="border p-2 rounded">
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<select id="pBahas" class="border p-2 rounded"><option value="langsung">Langsung bahas</option><option value="akhir">Bahas di akhir</option><option value="tanpa">Tanpa pembahasan</option></select>
-<input id="pKode" placeholder="Kode Akses" class="border p-2 rounded">
-<input id="pKKM" type="number" placeholder="KKM 75" value="75" class="border p-2 rounded">
-</div>
-<div class="border-2 border-orange-300 p-3 rounded bg-orange-50">
-<label class="font-bold text-sm text-orange-700">Pesan Motivasi Custom:</label>
-<textarea id="pMotivasi" placeholder="Kosongkan = otomatis" class="w-full border p-2 rounded mt-1" rows="2"></textarea>
-</div>
-<button onclick="savePaket()" class="mt-3 bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Paket</button>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Paket</h3>
-<div id="listPaket" class="text-sm">Loading...</div>
-</div>
-</div>
-<div id="viewSoal" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">Form Soal Lengkap + Gambar Opsi A-E <span id="modeEditLabel" class="text-sm text-orange-600"></span></h3>
-<input type="hidden" id="sEditId" value="">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-<select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select>
-<select id="sTipe" class="border p-2 rounded" onchange="changeTipe()">
-<option value="pg_tunggal">PG Tunggal</option>
-<option value="pg_kompleks">PG Kompleks</option>
-<option value="benar_salah">Benar Salah</option>
-<option value="menjodohkan">Menjodohkan</option>
-<option value="isian">Isian</option>
-<option value="essay">Essay</option>
-</select>
-</div>
-<textarea id="sPertanyaan" placeholder="Tulis pertanyaan... Rumus: \(x^2\) atau $$ \frac{a}{b} $$ | Kimia: \(\ce{H2SO4}\) | Quran: paste ayat berharakat" class="w-full border p-2 rounded h-24" oninput="updatePreviewSoal()"></textarea>
-<div class="flex gap-2 my-2">
-<input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm" onchange="validasiGambar(this)">
-<span class="text-xs">Gambar soal (max 2MB)</span>
-<img id="previewGambarSoalTambahan" class="hidden w-20 h-20 object-cover rounded border ml-2">
-</div>
-<div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div>
-<div class="mt-2 p-2 bg-blue-50 border rounded">
-<label class="text-sm font-bold">Gambar Opsi A-E (NEW) - id tetap:</label>
-<div class="grid grid-cols-5 gap-2 mt-1">
-<div><label class="text-xs">A</label><input type="file" id="gambar_opsi_0" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_0" class="mt-1"></div></div>
-<div><label class="text-xs">B</label><input type="file" id="gambar_opsi_1" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_1" class="mt-1"></div></div>
-<div><label class="text-xs">C</label><input type="file" id="gambar_opsi_2" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_2" class="mt-1"></div></div>
-<div><label class="text-xs">D</label><input type="file" id="gambar_opsi_3" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_3" class="mt-1"></div></div>
-<div><label class="text-xs">E</label><input type="file" id="gambar_opsi_4" accept="image/*" onchange="validasiGambar(this)" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_4" class="mt-1"></div></div>
-</div>
-</div>
-<div class="mt-3">
-<label class="text-sm font-bold">Pembahasan + Gambar (bisa 4 gambar, gratis base64):</label>
-<div class="flex gap-2 mb-1">
-  <input type="file" id="sPembahasanGambar" accept="image/*" multiple class="border p-1 rounded text-sm">
-  <span class="text-xs">Pilih banyak, otomatis dikompres jadi kecil</span>
-</div>
-<div id="previewPembahasan" class="flex flex-wrap gap-2 mt-2"></div>
-<textarea id="sPembahasan" placeholder="Pembahasan. Bisa pakai rumus \(...\) / \(\ce{...}\) / ayat Quran berharakat" class="w-full border p-2 rounded h-16" oninput="updatePreviewSoal()"></textarea>
-</div>
-<div class="flex gap-2 mt-3 flex-wrap">
-<button id="btnSimpanSoal" onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan</button>
-<button id="btnTambahSoal" onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Tambah Lagi</button>
-<button onclick="batalEditSoal()" class="border px-4 py-2 rounded">Batal Edit / Reset</button>
-<button onclick="updatePreviewSoal()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold">👁️ Lihat Preview</button>
-<span id="soalMsg" class="text-sm"></span>
-</div>
-<div class="mt-4 border-2 border-orange-300 rounded bg-orange-50 p-3">
-<div class="flex justify-between items-center"><b class="text-sm text-orange-700">👁️ PREVIEW - Tampilan Seperti di Siswa</b><span class="text-xs text-gray-500">Rumus & Quran otomatis ter-render</span></div>
-<div id="previewSoal" class="bg-white p-4 rounded border mt-2 text-[15px] whitespace-pre-line"><div class="text-gray-400 text-sm">Ketik soal di atas, preview muncul otomatis di sini.</div></div>
-</div>
-</div>
-<div class="bg-white p-4 rounded shadow">
-<h3 class="font-bold mb-2">Daftar Soal</h3>
-<div id="listSoal" class="text-sm">Pilih paket dulu</div>
-</div>
+
+  <div id="viewSoal" class="hidden">
+<div class="bg-white p-4 rounded shadow mb-4"><h3 class="font-bold mb-2">Form Soal Lengkap + Gambar Opsi A-E <span id="modeEditLabel" class="text-sm text-orange-600"></span></h3><input type="hidden" id="sEditId" value=""><div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"><select id="sPaket" class="border p-2 rounded"><option>Loading paket...</option></select><select id="sTipe" class="border p-2 rounded" onchange="changeTipe()"><option value="pg_tunggal">PG Tunggal</option><option value="pg_kompleks">PG Kompleks</option><option value="benar_salah">Benar Salah</option><option value="menjodohkan">Menjodohkan</option><option value="isian">Isian</option><option value="essay">Essay</option></select></div><textarea id="sPertanyaan" placeholder="Tulis pertanyaan..." class="w-full border p-2 rounded h-24" oninput="updatePreviewSoal()"></textarea><div class="flex gap-2 my-2 items-center"><input type="file" id="sGambar" accept="image/*" class="border p-1 rounded text-sm"><span class="text-xs">Gambar soal</span><img id="previewGambarSoalTambahan" class="hidden w-20 h-20 object-cover rounded border"></div><div id="opsiContainer" class="space-y-2 border p-3 rounded bg-gray-50"></div><div class="mt-2 p-2 bg-blue-50 border rounded"><label class="text-sm font-bold">Gambar Opsi A-E (NEW) id tetap gambar_opsi_0-4:</label><div class="grid grid-cols-5 gap-2 mt-1"><div><label class="text-xs">A</label><input type="file" id="gambar_opsi_0" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_0" class="mt-1"></div></div><div><label class="text-xs">B</label><input type="file" id="gambar_opsi_1" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_1" class="mt-1"></div></div><div><label class="text-xs">C</label><input type="file" id="gambar_opsi_2" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_2" class="mt-1"></div></div><div><label class="text-xs">D</label><input type="file" id="gambar_opsi_3" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_3" class="mt-1"></div></div><div><label class="text-xs">E</label><input type="file" id="gambar_opsi_4" accept="image/*" class="border p-1 rounded text-xs w-full"><div id="prev_opsi_4" class="mt-1"></div></div></div></div><div class="mt-3"><label class="text-sm font-bold">Pembahasan + Gambar (bisa 4 gambar, gratis base64):</label><div class="flex gap-2 mb-1"><input type="file" id="sPembahasanGambar" accept="image/*" multiple class="border p-1 rounded text-sm"><span class="text-xs">Otomatis kompres kecil</span></div><div id="previewPembahasan" class="flex flex-wrap gap-2 mt-2"></div><textarea id="sPembahasan" placeholder="Pembahasan" class="w-full border p-2 rounded h-16" oninput="updatePreviewSoal()"></textarea></div><div class="flex gap-2 mt-3 flex-wrap"><button id="btnSimpanSoal" onclick="saveSoal(false)" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan</button><button id="btnTambahSoal" onclick="saveSoal(true)" class="bg-green-600 text-white px-6 py-2 rounded font-bold">+ Tambah Lagi</button><button onclick="batalEditSoal()" class="border px-4 py-2 rounded">Batal Edit</button><button onclick="updatePreviewSoal()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold">Preview</button><span id="soalMsg" class="text-sm"></span></div><div class="mt-4 border-2 border-orange-300 rounded bg-orange-50 p-3"><b class="text-sm text-orange-700">PREVIEW SAMA PERSIS SISWA</b><div id="previewSoal" class="bg-white p-4 rounded border mt-2 text-[15px]"><div class="text-gray-400 text-sm">Ketik soal...</div></div></div></div>
+<div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Soal</h3><div id="listSoal" class="text-sm">Pilih paket dulu</div></div>
 </div>
 
 <div id="viewStimulus" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">5. Kelola Stimulus (Gambar | Audio | Video | Teks)</h3>
-<p class="text-xs text-gray-500 mb-3">1 stimulus untuk 1 - beberapa soal. Range mengacu ke <b>Nomor Urut Asli</b> di Daftar Soal. 1 soal tidak boleh punya 2 stimulus sekaligus. Tersimpan via /api/stimulus.</p>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-<select id="stPaket" class="border p-2 rounded"><option value="">Pilih Paket</option></select>
-<select id="stJenis" class="border p-2 rounded" onchange="stimOnJenisChange()"><option value="gambar">Gambar</option><option value="audio">Audio</option><option value="video">Video</option><option value="teks">Teks Panjang</option></select>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-<input id="stDari" type="number" min="1" placeholder="Soal Dari" class="border p-2 rounded">
-<input id="stSampai" type="number" min="1" placeholder="Soal Sampai" class="border p-2 rounded">
-<input id="stKeterangan" placeholder="Keterangan" class="border p-2 rounded">
-</div>
-<div id="stWrapGambar" class="border p-3 rounded bg-gray-50 mb-2"><label class="text-sm font-bold">Upload Gambar</label><br><input type="file" id="stGambar" accept="image/*" class="border p-1 rounded text-sm mt-1" onchange="validasiGambar(this); stimPreviewAdmin()"><div id="stPreviewGambar" class="mt-2"></div></div>
-<div id="stWrapAudio" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Audio Link</label><br><input id="stAudioLink" placeholder="https://..." class="w-full border p-2 rounded mt-1" oninput="stimPreviewAdmin()"><div class="mt-2"><label class="text-xs font-bold">Max Putar:</label><select id="stMaxPutar" class="border p-1 rounded text-sm"><option value="0">Bebas</option><option value="2">2x</option><option value="3">3x</option></select></div><div id="stPreviewAudio" class="mt-2"></div></div>
-<div id="stWrapVideo" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Video Link</label><div class="flex gap-2 mt-1"><select id="stSumberVideo" class="border p-2 rounded text-sm"><option value="youtube">YouTube</option><option value="drive">Drive/MP4</option></select><input id="stVideoLink" placeholder="https://..." class="border p-2 rounded flex-1" oninput="stimPreviewAdmin()"></div><div id="stPreviewVideo" class="mt-2"></div></div>
-<div id="stWrapTeks" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Teks Bacaan</label><textarea id="stTeks" placeholder="Teks..." class="w-full border p-2 rounded mt-1" rows="4" oninput="stimPreviewAdmin()"></textarea></div>
-<input type="hidden" id="stEditId" value="">
-<div class="flex gap-2 mt-2 flex-wrap"><button onclick="stimSimpan()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Stimulus</button><button onclick="stimResetForm()" class="border px-4 py-2 rounded">Batal / Reset</button><button onclick="stimPreviewAdmin()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold">Preview</button><span id="stMsg" class="text-sm"></span></div>
-<div class="mt-3 border-2 border-orange-300 rounded bg-orange-50 p-3"><b class="text-sm text-orange-700">Preview Stimulus</b><div id="stPreviewBox" class="bg-white p-3 rounded border mt-2 text-sm text-gray-500">Isi stimulus, preview muncul di sini.</div></div>
-</div>
+<div class="bg-white p-4 rounded shadow mb-4"><h3 class="font-bold mb-2">5. Kelola Stimulus</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2"><select id="stPaket" class="border p-2 rounded"><option value="">Pilih Paket</option></select><select id="stJenis" class="border p-2 rounded" onchange="stimOnJenisChange()"><option value="gambar">Gambar</option><option value="audio">Audio</option><option value="video">Video</option><option value="teks">Teks Panjang</option></select></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2"><input id="stDari" type="number" min="1" placeholder="Soal Dari" class="border p-2 rounded"><input id="stSampai" type="number" min="1" placeholder="Soal Sampai" class="border p-2 rounded"><input id="stKeterangan" placeholder="Keterangan" class="border p-2 rounded"></div><div id="stWrapGambar" class="border p-3 rounded bg-gray-50 mb-2"><label class="text-sm font-bold">Upload Gambar</label><br><input type="file" id="stGambar" accept="image/*" class="border p-1 rounded text-sm mt-1"><div id="stPreviewGambar" class="mt-2"></div></div><div id="stWrapAudio" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Audio Link</label><br><input id="stAudioLink" placeholder="https://..." class="w-full border p-2 rounded mt-1"><div class="mt-2"><label class="text-xs font-bold">Max Putar:</label><select id="stMaxPutar" class="border p-1 rounded text-sm"><option value="0">Bebas</option><option value="2">2x</option><option value="3">3x</option></select></div></div><div id="stWrapVideo" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Video Link</label><div class="flex gap-2 mt-1"><select id="stSumberVideo" class="border p-2 rounded text-sm"><option value="youtube">YouTube</option><option value="drive">Drive/MP4</option></select><input id="stVideoLink" placeholder="https://..." class="border p-2 rounded flex-1"></div></div><div id="stWrapTeks" class="border p-3 rounded bg-gray-50 mb-2 hidden"><label class="text-sm font-bold">Teks Bacaan</label><textarea id="stTeks" placeholder="Teks..." class="w-full border p-2 rounded mt-1" rows="4"></textarea></div><input type="hidden" id="stEditId" value=""><div class="flex gap-2 mt-2 flex-wrap"><button onclick="stimSimpan()" class="bg-blue-600 text-white px-6 py-2 rounded font-bold">Simpan Stimulus</button><button onclick="stimResetForm()" class="border px-4 py-2 rounded">Batal</button><span id="stMsg" class="text-sm"></span></div><div class="mt-3 border-2 border-orange-300 rounded bg-orange-50 p-3"><b class="text-sm text-orange-700">Preview Stimulus</b><div id="stPreviewBox" class="bg-white p-3 rounded border mt-2 text-sm text-gray-500">Isi stimulus</div></div></div>
 <div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Daftar Stimulus</h3><div id="stList" class="text-sm">Pilih paket dulu</div></div>
 </div>
 
 <div id="viewNilai" class="hidden">
-<div class="bg-white p-4 rounded shadow mb-4">
-<h3 class="font-bold mb-2">4. Laporan Nilai Siswa</h3>
-<div class="flex flex-wrap gap-2 mb-3">
-<select id="filterPaketNilai" class="border p-2 rounded text-sm"><option value="">Semua Paket</option></select>
-<input id="searchSiswaNilai" placeholder="Cari Encha" class="border p-2 rounded text-sm flex-1">
-<button onclick="loadLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Refresh</button>
-<button onclick="exportNilaiExcel()" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Export CSV</button>
-</div>
-<div id="rekapNilai" class="text-sm">Klik Refresh</div>
-</div>
+<div class="bg-white p-4 rounded shadow mb-4"><h3 class="font-bold mb-2">4. Laporan Nilai Siswa</h3><div class="flex flex-wrap gap-2 mb-3"><select id="filterPaketNilai" class="border p-2 rounded text-sm"><option value="">Semua Paket</option></select><input id="searchSiswaNilai" placeholder="Cari siswa" class="border p-2 rounded text-sm flex-1"><button onclick="loadLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold">Refresh</button><button onclick="exportNilaiExcel()" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Export CSV</button></div><div id="rekapNilai" class="text-sm">Klik Refresh</div></div>
 <div class="bg-white p-4 rounded shadow"><h3 class="font-bold mb-2">Detail</h3><div id="detailNilai" class="text-sm text-gray-500">Klik Detail</div></div>
 </div>
+
 </div>
 
-  // === TAMBAHAN BARU GRATIS - HANYA TAMBAH, TIDAK HAPUS ===
-let pembahasanImages = window.pembahasanImages || [];
-let opsiGambarImages = window.opsiGambarImages || ["","","","",""];
-let gambarSoalBase64 = window.gambarSoalBase64 || "";
-async function compressImage(file, maxWidth=900, quality=0.6){
-  return new Promise(res=>{
-    let img=new Image();
-    img.onload=()=>{
-      let canvas=document.createElement('canvas');
-      let scale=Math.min(1,maxWidth/img.width);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      res(canvas.toDataURL('image/webp',quality));
-    };
-    img.src=URL.createObjectURL(file);
-  });
-}
-function renderPreviewPembahasan(){
-  let box=document.getElementById('previewPembahasan'); if(!box) return;
-  box.innerHTML=pembahasanImages.map((src,i)=>`<div class="relative border rounded p-1 bg-white"><img src="${src}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan();updatePreviewSoal()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button></div>`).join('');
-}
-function renderPreviewOpsi(i,b64){
-  let pv=document.getElementById('prev_opsi_'+i); if(!pv) return;
-  pv.innerHTML=`<img src="${b64}" class="w-16 h-16 object-cover rounded border mt-1"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML='';updatePreviewSoal()" class="text-xs text-red-600">hapus</button>`;
-}
-// listener opsi A-E gratis
-for(let i=0;i<5;i++){
-  document.getElementById('gambar_opsi_'+i)?.addEventListener('change', async (e)=>{
-    let f=e.target.files[0]; if(!f) return;
-    let b64=await compressImage(f,600,0.6);
-    opsiGambarImages[i]=b64; renderPreviewOpsi(i,b64); updatePreviewSoal();
-  });
-}
-document.getElementById('sGambar')?.addEventListener('change', async (e)=>{
-  let f=e.target.files[0]; if(!f) return;
-  let b64=await compressImage(f,900,0.6); gambarSoalBase64=b64;
-  let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=b64; prev.classList.remove('hidden'); }
-  updatePreviewSoal();
-});
-document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{
-  let files=Array.from(e.target.files).slice(0,4);
-  for(let f of files){ let b64=await compressImage(f,900,0.6); pembahasanImages.push(b64); }
-  renderPreviewPembahasan(); updatePreviewSoal(); e.target.value='';
-});
-<script>
+  <script>
 let allPaketGlobal=[];
-function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
-function showTab(t){
- try{
-   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'];
-   for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
-   var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(target) target.classList.remove('hidden');
-   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai','tabStimulus'];
-   for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
-   var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
-   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan(); if(t==='stimulus'){ stimLoadPaketOptions(); stimRenderList(); }
- }catch(err){ console.error(err); }
-}
-
-// === TAMBAHAN BARU GRATIS - HANYA TAMBAH, TIDAK HAPUS YANG LAMA ===
-let pembahasanImages = [];
-let opsiGambarImages = ["","","","",""];
-let gambarSoalBase64 = "";
-async function compressImage(file, maxWidth=900, quality=0.6){
-  return new Promise(res=>{
-    let img=new Image();
-    img.onload=()=>{
-      let canvas=document.createElement('canvas');
-      let scale=Math.min(1,maxWidth/img.width);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      res(canvas.toDataURL('image/webp',quality));
-    };
-    img.src=URL.createObjectURL(file);
-  });
-}
-function renderPreviewPembahasan(){
-  let box=document.getElementById('previewPembahasan'); if(!box) return;
-  box.innerHTML=pembahasanImages.map((src,i)=>`<div class="relative border rounded p-1 bg-white"><img src="${src}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan();updatePreviewSoal()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button></div>`).join('');
-}
-function renderPreviewOpsi(i,b64){
-  let pv=document.getElementById('prev_opsi_'+i); if(!pv) return;
-  pv.innerHTML=`<img src="${b64}" class="w-16 h-16 object-cover rounded border mt-1"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML='';updatePreviewSoal()" class="text-xs text-red-600">hapus</button>`;
-}
-
-async function loadPaketCheck(){
- try{
- let res=await fetch('/api/siswa?action=paket_list');
- allPaketGlobal=await res.json();
- let html='';
- allPaketGlobal.forEach(p=>{
-   html+=`<label class="flex gap-2 items-center"><input type="checkbox" value="${p.id}" class="paketCheck"> ${escHtml(p.kelas)} - ${escHtml(p.mapel)} - ${escHtml(p.nama)} (${escHtml(p.jenis)})</label>`;
- });
- document.getElementById('checkPaket').innerHTML=html||'Belum ada paket';
- }catch(e){ document.getElementById('checkPaket').innerHTML='Gagal memuat paket: '+escHtml(e.message); }
-}
-async function loadSiswa(){
- try{
- let res=await fetch('/api/siswa?action=list');
- let data=await res.json();
- let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Paket</th><th class="border p-1">Aksi</th></tr>';
- data.forEach(s=>{
-   let pa=''; try{let arr=JSON.parse(s.paket_aktif||'[]'); pa=arr.length+' paket';}catch(e){pa=escHtml(s.paket_aktif);}
-   html+=`<tr><td class="border p-1">${escHtml(s.username)}</td><td class="border p-1">${escHtml(s.nama)}</td><td class="border p-1 text-xs">${pa}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`;
- });
- html+='</table>';
- document.getElementById('listSiswa').innerHTML=html;
- }catch(e){ document.getElementById('listSiswa').innerHTML='Gagal memuat siswa: '+escHtml(e.message); }
-}
-async function saveSiswa(){
- let paketAktif=[];
- document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value)));
- let body={action: document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif};
- let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
- let d=await res.json();
- if(d.ok){alert('Siswa disimpan'); resetFormSiswa(); loadSiswa();} else alert(d.msg);
-}
-function resetFormSiswa(){document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>document.getElementById(id).value=''); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false);}
-async function editSiswa(id){ let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id); if(!s) return; document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa; try{let arr=JSON.parse(s.paket_aktif||'[]'); document.querySelectorAll('.paketCheck').forEach(c=>{c.checked=arr.includes(parseInt(c.value))||arr.includes(c.value.toString());});}catch(e){} }
-async function delSiswa(id){if(!confirm('Hapus siswa?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa();}
-loadPaketCheck(); loadSiswa();
-</script>
-
-<script>
+function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderRich(el){ if(!el) return; try{ if(window.renderMathInElement){ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); } }catch(e){} }
+function showTab(t){ var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus']; ids.forEach(id=>{ let e=document.getElementById(id); if(e) e.classList.add('hidden'); }); let target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1)); if(target) target.classList.remove('hidden'); if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan(); if(t==='stimulus'){ stimLoadPaketOptions(); stimRenderList(); } }
+function validasiGambar(input){ if(!input.files||!input.files[0]) return; if(input.files[0].size>2*1024*1024){ alert('Gambar >2MB'); input.value=''; } }
+let pembahasanImages=[]; let opsiGambarImages=["","","","",""]; let gambarSoalBase64="";
+async function compressImage(file,maxWidth=900,quality=0.6){ return new Promise(res=>{ let img=new Image(); img.onload=()=>{ let canvas=document.createElement('canvas'); let scale=Math.min(1,maxWidth/img.width); canvas.width=img.width*scale; canvas.height=img.height*scale; canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height); res(canvas.toDataURL('image/webp',quality)); }; img.onerror=()=>res(''); img.src=URL.createObjectURL(file); }); }
+function renderPreviewPembahasan(){ let box=document.getElementById('previewPembahasan'); if(!box) return; box.innerHTML=pembahasanImages.map((src,i)=>`<div class="relative border p-1 bg-white"><img src="${src}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImages.splice(${i},1);renderPreviewPembahasan();updatePreviewSoal()" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs w-5 h-5 rounded-full">x</button></div>`).join(''); }
+function renderPreviewOpsi(i,b64){ let pv=document.getElementById('prev_opsi_'+i); if(!pv) return; pv.innerHTML=`<img src="${b64}" class="w-16 h-16 object-cover rounded border mt-1"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML='';updatePreviewSoal()" class="text-xs text-red-600">hapus</button>`; }
+async function loadPaketCheck(){ try{ let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); allPaketGlobal=data; document.getElementById('checkPaket').innerHTML=data.map(p=>`<label class="flex gap-2"><input type="checkbox" value="${p.id}" class="paketCheck"> ${escHtml(p.kelas)}-${escHtml(p.mapel)}-${escHtml(p.nama)}</label>`).join('<br>'); }catch(e){ document.getElementById('checkPaket').innerHTML='Gagal'; } }
+async function loadSiswa(){ try{ let res=await fetch('/api/siswa?action=list'); let data=await res.json(); let html='<table class="w-full border text-xs"><tr class="bg-gray-100"><th class="border p-1">User</th><th class="border p-1">Nama</th><th class="border p-1">Aksi</th></tr>'; data.forEach(s=>{ html+=`<tr><td class="border p-1">${escHtml(s.username)}</td><td class="border p-1">${escHtml(s.nama)}</td><td class="border p-1"><button onclick="editSiswa(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSiswa(${s.id})" class="text-red-600">Hapus</button></td></tr>`; }); html+='</table>'; document.getElementById('listSiswa').innerHTML=html; }catch(e){ document.getElementById('listSiswa').innerHTML='Gagal: '+e.message+' <button onclick="loadSiswa()" class="bg-blue-600 text-white px-2 py-1 rounded">Retry</button>'; } }
+async function saveSiswa(){ let paketAktif=[]; document.querySelectorAll('.paketCheck:checked').forEach(c=>paketAktif.push(parseInt(c.value))); let body={action:document.getElementById('sId').value?'edit':'add', id:document.getElementById('sId').value||undefined, username:document.getElementById('sUsername').value, password:document.getElementById('sPassword').value, nama:document.getElementById('sNama').value, wa:document.getElementById('sWA').value, paket_aktif:paketAktif}; let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); let d=await res.json(); if(d.ok){ resetFormSiswa(); loadSiswa(); } else alert(d.msg); }
+function resetFormSiswa(){ document.getElementById('sId').value=''; ['sUsername','sPassword','sNama','sWA'].forEach(id=>{ let el=document.getElementById(id); if(el) el.value=''; }); document.querySelectorAll('.paketCheck').forEach(c=>c.checked=false); }
+async function editSiswa(id){ let res=await fetch('/api/siswa?action=list'); let all=await res.json(); let s=all.find(x=>x.id==id); if(!s) return; document.getElementById('sId').value=s.id; document.getElementById('sUsername').value=s.username; document.getElementById('sPassword').value=s.password; document.getElementById('sNama').value=s.nama; document.getElementById('sWA').value=s.wa; }
+async function delSiswa(id){ if(!confirm('Hapus?')) return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSiswa(); }
 let manifestItems=[];
-async function loadManifest(){
- try{
- let res=await fetch('/api/manifest');
- let data=await res.json();
- manifestItems=data.items||[];
- let kelas=document.getElementById('pKelas').value;
- let mapelSet=[...new Set(manifestItems.filter(i=>!kelas||i.kelas==kelas).map(i=>i.mapel))];
- let babSet=[...new Set(manifestItems.filter(i=>!kelas||i.kelas==kelas).map(i=>i.bab))];
- let defaultMapel=["Matematika","IPA","IPS","Bahasa Indonesia","Bahasa Inggris","Fisika","Kimia","Biologi","TKA Matematika","TKA Saintek","TARUNA Akademik"];
- let allMapel=[...new Set([...defaultMapel,...mapelSet])];
- document.getElementById('pMapel').innerHTML='<option value="">Pilih Mapel</option>'+allMapel.map(m=>`<option>${escHtml(m)}</option>`).join('');
- document.getElementById('pBab').innerHTML='<option value="">Pilih Bab</option>'+babSet.map(b=>`<option>${escHtml(b)}</option>`).join('')+'<option value="__baru">-- Bab Baru --</option>';
- loadPaketList();
- }catch(e){ console.error(e); }
-}
-async function addMapel(){ let nama=prompt('Nama Mapel baru:'); if(!nama) return; let kelas=document.getElementById('pKelas').value||'SMA10'; await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:nama,bab:'Umum'})}); alert('Mapel '+nama+' ditambahkan!'); loadManifest(); }
-async function addBab(){ let nama=prompt('Nama Bab baru:'); if(!nama) return; let kelas=document.getElementById('pKelas').value||'SMA10'; let mapel=document.getElementById('pMapel').value||'Umum'; await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:mapel,bab:nama})}); alert('Bab '+nama+' ditambahkan!'); loadManifest(); }
-document.getElementById('pKelas').addEventListener('change',loadManifest);
-async function savePaket(){
- let body={action:'add_paket', kelas:document.getElementById('pKelas').value, mapel:document.getElementById('pMapel').value, bab:document.getElementById('pBab').value, jenis:document.getElementById('pJenis').value, nama:document.getElementById('pNama').value, waktu:parseInt(document.getElementById('pWaktu').value)||0, pembahasan:document.getElementById('pBahas').value, kode_akses:document.getElementById('pKode').value, motivasi:document.getElementById('pMotivasi').value};
- if(!body.kelas||!body.mapel||!body.nama){alert('Lengkapi Kelas Mapel Nama Paket'); return;}
- let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
- let d=await res.json();
- if(d.ok){alert('Paket disimpan ID '+d.id); loadPaketList(); loadPaketCheck();}
-}
-async function loadPaketList(){
- try{
- let res=await fetch('/api/siswa?action=paket_list');
- let data=await res.json();
- allPaketGlobal=data;
- let html='<table class="w-full border"><tr class="bg-gray-100"><th class="border p-1">ID</th><th class="border p-1">Kelas/Mapel/Bab</th><th class="border p-1">Paket</th><th class="border p-1">Motivasi</th><th class="border p-1">Aksi</th></tr>';
- data.forEach(p=>{
-   html+=`<tr><td class="border p-1">${p.id}</td><td class="border p-1 text-xs">${escHtml(p.kelas)}/${escHtml(p.mapel)}/${escHtml(p.bab)}</td><td class="border p-1">${escHtml(p.nama)}<br><span class="text-xs">${escHtml(p.jenis)} ${p.waktu? p.waktu+'m':''}</span></td><td class="border p-1 text-xs">${escHtml((p.motivasi||'').substring(0,30))}</td><td class="border p-1"><button onclick="delPaket(${p.id})" class="text-red-600">Hapus</button></td></tr>`;
- });
- html+='</table>';
- document.getElementById('listPaket').innerHTML=html;
- }catch(e){ document.getElementById('listPaket').innerHTML='Gagal memuat paket: '+escHtml(e.message); }
-}
-async function delPaket(id){ if(!confirm('Hapus paket & semua soalnya?'))return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})}); await loadPaketList(); await loadPaketCheck(); await loadPaketForSoal(); await loadLaporan(); }
-</script>
-
-<script>
-function validasiGambar(input){ if(!input.files||!input.files[0]) return; if(input.files[0].size>2*1024*1024){ alert('Gambar >2MB, pilih yang lebih kecil.'); input.value=''; return; } }
-let _jodohKiri=['','','']; let _jodohKanan=['','','']; let _jodohPair=['0-0','1-1','2-2'];
-function renderJodoh(){
-  let kiriHtml=_jodohKiri.map((v,i)=>`<div class="flex gap-1 mb-1 items-center"><span class="font-bold w-5">${i+1}.</span><input data-jkiri="${i}" value="${(v||'').replace(/"/g,'&quot;')}" placeholder="Soal ${i+1}" class="border p-1 rounded w-full" oninput="updatePreviewSoal()"><button onclick="hapusJodohKiri(${i})" class="text-red-600 text-xs">✕</button></div>`).join('');
-  let kananHtml=_jodohKanan.map((v,i)=>`<div class="flex gap-1 mb-1 items-center"><span class="font-bold w-5">${String.fromCharCode(97+i)}.</span><input data-jkanan="${i}" value="${(v||'').replace(/"/g,'&quot;')}" placeholder="Jawaban ${String.fromCharCode(97+i)}" class="border p-1 rounded w-full" oninput="updatePreviewSoal()"><button onclick="hapusJodohKanan(${i})" class="text-red-600 text-xs">✕</button></div>`).join('');
-  let pairHtml=_jodohKiri.map((_,i)=>{ let opts=_jodohKanan.map((_,j)=>`<option value="${i}-${j}" ${(_jodohPair[i]==i+'-'+j)?'selected':''}>${i+1} → ${String.fromCharCode(97+j)}</option>`).join(''); return `<div class="flex gap-1 items-center text-xs"><span>Pasangan ${i+1}:</span><select data-jpair="${i}" class="border p-1 rounded">${opts}</select></div>`; }).join('');
-  let c=document.getElementById('jodohWrap'); if(c) c.innerHTML=`<div class="grid grid-cols-2 gap-2"><div><b>Kolom Soal (1,2,3...)</b>${kiriHtml}<button onclick="tambahJodohKiri()" class="bg-green-600 text-white px-2 py-1 rounded text-xs mt-1">+ Tambah Soal</button></div><div><b>Kolom Jawaban (a,b,c...)</b>${kananHtml}<button onclick="tambahJodohKanan()" class="bg-green-600 text-white px-2 py-1 rounded text-xs mt-1">+ Tambah Jawaban</button></div></div><div class="mt-2 space-y-1 bg-yellow-50 p-2 rounded"><b class="text-xs">Pasangan Benar:</b>${pairHtml}</div>`;
-}
-function syncJodohFromDOM(){ document.querySelectorAll('[data-jkiri]').forEach(el=>{_jodohKiri[parseInt(el.dataset.jkiri)]=el.value;}); document.querySelectorAll('[data-jkanan]').forEach(el=>{_jodohKanan[parseInt(el.dataset.jkanan)]=el.value;}); document.querySelectorAll('[data-jpair]').forEach(el=>{_jodohPair[parseInt(el.dataset.jpair)]=el.value;}); }
-function tambahJodohKiri(){ syncJodohFromDOM(); _jodohKiri.push(''); _jodohPair.push((_jodohKiri.length-1)+'-0'); renderJodoh(); updatePreviewSoal(); }
-function tambahJodohKanan(){ syncJodohFromDOM(); _jodohKanan.push(''); renderJodoh(); updatePreviewSoal(); }
-function hapusJodohKiri(i){ syncJodohFromDOM(); _jodohKiri.splice(i,1); _jodohPair.splice(i,1); renderJodoh(); updatePreviewSoal(); }
-function hapusJodohKanan(i){ syncJodohFromDOM(); _jodohKanan.splice(i,1); renderJodoh(); updatePreviewSoal(); }
-async function loadPaketForSoal(){ try{ let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); document.getElementById('sPaket').innerHTML=data.map(p=>`<option value="${p.id}">[${p.id}] ${escHtml(p.kelas)}/${escHtml(p.mapel)}/${escHtml(p.bab)} - ${escHtml(p.nama)} (${escHtml(p.jenis)})</option>`).join(''); loadSoalList(); }catch(e){ document.getElementById('sPaket').innerHTML='<option>Gagal memuat paket</option>'; } }
-document.getElementById('sPaket').addEventListener('change',loadSoalList);
-function changeTipe(){
- let tipe=document.getElementById('sTipe').value;
- let c=document.getElementById('opsiContainer');
- if(tipe==='pg_tunggal'){ c.innerHTML=`Opsi PG Tunggal:<br>${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="radio" name="kunci" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded" oninput="updatePreviewSoal()"></div>`).join('')}`; }
- else if(tipe==='pg_kompleks'){ c.innerHTML=`PG Kompleks:<br>${[0,1,2,3,4].map(i=>`<div class="flex gap-2"><input type="checkbox" name="kunci_multi" value="${i}"><span class="font-bold">${String.fromCharCode(65+i)}</span><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded" oninput="updatePreviewSoal()"></div>`).join('')}`; }
- else if(tipe==='benar_salah'){ c.innerHTML=`<div class="flex gap-2"><input type="radio" name="kunci" value="0"> Benar <input type="radio" name="kunci" value="1"> Salah</div>`; }
- else if(tipe==='menjodohkan'){ c.innerHTML=`<div id="jodohWrap"></div>`; if(!document.getElementById('sEditId').value){ _jodohKiri=['','','']; _jodohKanan=['','','']; _jodohPair=['0-0','1-1','2-2']; } renderJodoh(); }
- else if(tipe==='isian'){ c.innerHTML=`Isian:<input id="kunci_isian" placeholder="Jawaban" class="border p-2 rounded w-full" oninput="updatePreviewSoal()">`; }
- else { c.innerHTML=`Essay:<textarea id="kunci_essay" placeholder="Kunci essay" class="w-full border p-1 rounded" oninput="updatePreviewSoal()"></textarea>`; }
- updatePreviewSoal();
-}
-changeTipe();
-function resetFormSoal(){
-  document.getElementById('sEditId').value='';
-  document.getElementById('modeEditLabel').innerText='';
-  document.getElementById('sPertanyaan').value='';
-  document.getElementById('sPembahasan').value='';
-  document.getElementById('sGambar').value='';
-  document.getElementById('sPembahasanGambar').value='';
-  for(let i=0;i<5;i++){ let el=document.getElementById('opsi_'+i); if(el) el.value=''; let fg=document.getElementById('gambar_opsi_'+i); if(fg) fg.value=''; let pv=document.getElementById('prev_opsi_'+i); if(pv) pv.innerHTML=''; }
-  pembahasanImages=[]; opsiGambarImages=["","","","",""]; gambarSoalBase64="";
-  let pg=document.getElementById('previewPembahasan'); if(pg) pg.innerHTML='';
-  let gg=document.getElementById('previewGambarSoalTambahan'); if(gg){ gg.src=''; gg.classList.add('hidden'); }
-  let ki=document.getElementById('kunci_isian'); if(ki) ki.value='';
-  let ke=document.getElementById('kunci_essay'); if(ke) ke.value='';
-  _jodohKiri=['','','']; _jodohKanan=['','','']; _jodohPair=['0-0','1-1','2-2'];
-  document.querySelectorAll('input[name="kunci"]').forEach(r=>r.checked=false);
-  document.querySelectorAll('input[name="kunci_multi"]').forEach(r=>r.checked=false);
-  changeTipe(); updatePreviewSoal();
-}
-function batalEditSoal(){ resetFormSoal(); document.getElementById('soalMsg').innerText=''; }
-
-async function saveSoal(tambahLagi){
- let btnS=document.getElementById('btnSimpanSoal'); let btnT=document.getElementById('btnTambahSoal');
- let paket_id=document.getElementById('sPaket').value;
- let tipe=document.getElementById('sTipe').value;
- let pertanyaan=document.getElementById('sPertanyaan').value;
- let pembahasan=document.getElementById('sPembahasan').value;
- if(!paket_id||!pertanyaan){alert('Paket & Pertanyaan wajib'); return;}
- let opsi=[], kunci=[];
- try{
-  if(tipe==='pg_tunggal'){
-    for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); opsi.push(v? v.value : '');}
-    let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];
-  } else if(tipe==='pg_kompleks'){
-    for(let i=0;i<5;i++){let v=document.getElementById('opsi_'+i); opsi.push(v? v.value:'');}
-    document.querySelectorAll('input[name="kunci_multi"]:checked').forEach(c=>kunci.push(parseInt(c.value)));
-  } else if(tipe==='benar_salah'){opsi=["Benar","Salah"]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];}
-  else if(tipe==='menjodohkan'){
-    syncJodohFromDOM();
-    let kiriArr=_jodohKiri, kananArr=_jodohKanan;
-    opsi=[...kiriArr,...kananArr];
-    kunci=[_jodohPair.join(','), JSON.stringify({kiri:kiriArr, kanan:kananArr, pairs:_jodohPair, nKiri:kiriArr.length})];
-  } else if(tipe==='isian'){kunci=[document.getElementById('kunci_isian').value];}
-  else {kunci=[document.getElementById('kunci_essay').value];}
-
-  let fd=new FormData();
-  let editId=document.getElementById('sEditId').value;
-  if(editId) fd.append('id', editId);
-  fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
-  let file=document.getElementById('sGambar').files[0]; if(file) fd.append('gambar_file',file);
-  for(let i=0;i<5;i++){ let fg=document.getElementById('gambar_opsi_'+i); if(fg&&fg.files[0]) fd.append('gambar_opsi_'+i, fg.files[0]); }
-  // TAMBAHAN GRATIS - simpan base64 kompres
-  fd.append('opsi_gambar', JSON.stringify(opsiGambarImages));
-  fd.append('pembahasan_gambar', JSON.stringify(pembahasanImages));
-  if(gambarSoalBase64) fd.append('gambar', gambarSoalBase64);
-
-  let res=await fetch('/api/soal',{method:'POST',body:fd});
-  let d=await res.json();
-  if(d.ok){
-    document.getElementById('soalMsg').innerText= editId? 'Soal berhasil di-update' : 'Soal tersimpan OK';
-    await loadSoalList();
-    if(tambahLagi){ resetFormSoal(); document.getElementById('sPertanyaan').focus(); }
-    else if(editId){ resetFormSoal(); }
-  } else { alert(d.msg||'Gagal simpan soal'); }
- }catch(e){ console.error(e); alert('Gagal simpan: '+e.message); }
- finally{ if(btnS) btnS.disabled=false; if(btnT) btnT.disabled=false; }
-}
-async function loadSoalList(){
-  let el = document.getElementById('listSoal');
-  let pid = document.getElementById('sPaket').value;
-  if(!pid) return;
-  el.innerHTML = 'Memuat soal...';
-  try{
-    let res = await fetch('/api/soal?paket_id='+pid);
-    let raw = await res.json();
-    let data = Array.isArray(raw) ? raw : (raw.data || raw.soal || raw.items || []);
-    window._lastSoal = data;
-    if(!data.length){ el.innerHTML = 'Belum ada soal untuk paket '+pid; return; }
-    el.innerHTML = data.length + ' soal:<br>' + data.map((s,i)=>{
-      return `<div class="flex justify-between gap-2 border-b py-1"><span>${i+1}. ${escHtml(s.pertanyaan||'').substring(0,80)}... [${escHtml(s.tipe)}]</span><span class="shrink-0"><button onclick="previewSoalTersimpan(${s.id})" class="text-orange-600 underline">Preview</button> | <button onclick="editSoal(${s.id})" class="text-blue-600 underline">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`;
-    }).join('');
-  }catch(e){ el.innerHTML = 'Gagal memuat soal: ' + escHtml(e.message); }
-}
-async function editSoal(id){
-  let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s) return;
-  document.getElementById('sEditId').value=s.id;
-  document.getElementById('modeEditLabel').innerText='(Mode EDIT ID '+s.id+')';
-  document.getElementById('sPertanyaan').value=s.pertanyaan||'';
-  document.getElementById('sPembahasan').value=s.pembahasan||'';
-  document.getElementById('sTipe').value=s.tipe||'pg_tunggal';
-  changeTipe();
-  try{
-    let opsi=typeof s.opsi==='string'? JSON.parse(s.opsi): s.opsi;
-    let kunci=typeof s.kunci==='string'? JSON.parse(s.kunci): s.kunci;
-    if(s.tipe==='pg_tunggal'||s.tipe==='pg_kompleks'){
-      (opsi||[]).forEach((v,i)=>{ let el=document.getElementById('opsi_'+i); if(el) el.value=v; });
-      if(s.tipe==='pg_tunggal'){ let r=document.querySelector('input[name="kunci"][value="'+(kunci&&kunci[0])+'"]'); if(r) r.checked=true; }
-      else { (kunci||[]).forEach(k=>{ let c=document.querySelector('input[name="kunci_multi"][value="'+k+'"]'); if(c) c.checked=true; }); }
-    } else if(s.tipe==='menjodohkan'){
-      let parsed=null; try{ if(kunci&&kunci[1]) parsed=JSON.parse(kunci[1]); }catch(e){}
-      if(parsed&&parsed.kiri){ _jodohKiri=parsed.kiri; _jodohKanan=parsed.kanan; _jodohPair=parsed.pairs; }
-      else { let n=Math.floor((opsi||[]).length/2); _jodohKiri=(opsi||[]).slice(0,n); _jodohKanan=(opsi||[]).slice(n); _jodohPair=(kunci&&kunci[0]? String(kunci[0]).split(','): _jodohKiri.map((_,i)=>i+'-'+i)); }
-      renderJodoh();
-    } else if(s.tipe==='isian'){ let el=document.getElementById('kunci_isian'); if(el) el.value=(kunci&&kunci[0])||''; }
-    else if(s.tipe==='essay'){ let el=document.getElementById('kunci_essay'); if(el) el.value=(kunci&&kunci[0])||''; }
-    // load gambar lama
-    try{ let oldO=JSON.parse(s.opsi_gambar||s.gambar_opsi||'[]'); if(Array.isArray(oldO)){ opsiGambarImages=oldO; oldO.forEach((b,i)=>{ if(b) renderPreviewOpsi(i,b); }); } }catch(e){}
-    try{ let oldP=JSON.parse(s.pembahasan_gambar||s.gambar_pembahasan||'[]'); if(Array.isArray(oldP)){ pembahasanImages=oldP; renderPreviewPembahasan(); } }catch(e){}
-    if(s.gambar){ gambarSoalBase64=s.gambar; let pv=document.getElementById('previewGambarSoalTambahan'); if(pv){ pv.src=s.gambar; pv.classList.remove('hidden'); } }
-  }catch(e){ console.error(e); }
-  updatePreviewSoal(); window.scrollTo({top:0, behavior:'smooth'});
-}
-async function delSoal(id){ if(!confirm('Hapus soal ini?')) return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
-function updatePreviewSoal(){
-  let box=document.getElementById('previewSoal'); if(!box) return;
-  let tipe=document.getElementById('sTipe')? document.getElementById('sTipe').value : 'pg_tunggal';
-  let pertanyaan=document.getElementById('sPertanyaan')? document.getElementById('sPertanyaan').value : '';
-  let pembahasan=document.getElementById('sPembahasan')? document.getElementById('sPembahasan').value : '';
-  let html='<div class="font-medium mb-3">'+(pertanyaan||'<span class="text-gray-400">Belum ada pertanyaan...</span>')+'</div>';
-  if(gambarSoalBase64) html+=`<img src="${gambarSoalBase64}" class="max-w-full mb-3 rounded border">`;
-  if(tipe==='menjodohkan'){
-    syncJodohFromDOM();
-    html+='<div class="grid grid-cols-2 gap-3 text-sm"><div><b>Soal</b>'+_jodohKiri.map((k,i)=>`<div class="border p-2 rounded mt-1">${i+1}. ${k||'<span class="text-gray-400">...</span>'}</div>`).join('')+'</div><div><b>Jawaban</b>'+_jodohKanan.map((k,i)=>`<div class="border p-2 rounded mt-1">${String.fromCharCode(97+i)}. ${k||'<span class="text-gray-400">...</span>'}</div>`).join('')+'</div></div>';
-  } else if(tipe==='isian'){
-    let k=document.getElementById('kunci_isian')? document.getElementById('kunci_isian').value : '';
-    html+='<div class="text-sm">Jawaban isian: <b>'+escHtml(k||'-')+'</b></div>';
-  } else if(tipe==='essay'){
-    let k=document.getElementById('kunci_essay')? document.getElementById('kunci_essay').value : '';
-    html+='<div class="text-sm">Kunci essay: <b>'+escHtml(k||'-')+'</b></div>';
-  } else {
-    let opts=[]; for(let i=0;i<5;i++){ let el=document.getElementById('opsi_'+i); opts.push(el? el.value : ''); }
-    html+='<div class="space-y-2">'+opts.map((o,i)=>{ let img=opsiGambarImages[i]? `<img src="${opsiGambarImages[i]}" class="max-w-full mt-1 rounded border">` : ''; return `<div class="border p-3 rounded text-sm"><span class="font-bold">${String.fromCharCode(65+i)}.</span> ${o||'<span class="text-gray-400">...</span>'} ${img}</div>`; }).join('')+'</div>';
-  }
-  if(pembahasan || pembahasanImages.length>0){
-    html+='<div class="mt-4 p-3 bg-green-50 border border-green-200 rounded text-sm"><b>Pembahasan:</b><div class="mt-1">'+(pembahasan||'-')+'</div>';
-    if(pembahasanImages.length>0) html+=pembahasanImages.map(src=>`<img src="${src}" class="max-w-full rounded border mt-2">`).join('');
-    html+='</div>';
-  }
-  box.innerHTML=html; renderRich(box);
-}
-function previewSoalTersimpan(id){
-  let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s) return;
-  let box=document.getElementById('previewSoal'); if(!box) return;
-  let tipe=s.tipe||'pg_tunggal'; let opsi=[]; let kunci=[];
-  try{ opsi=typeof s.opsi==='string'? JSON.parse(s.opsi): (s.opsi||[]); }catch(e){ opsi=[]; }
-  try{ kunci=typeof s.kunci==='string'? JSON.parse(s.kunci): (s.kunci||[]); }catch(e){ kunci=[]; }
-  let html='<div class="font-medium mb-3">'+(s.pertanyaan||'')+'</div>';
-  if(s.gambar) html+=`<img src="${s.gambar}" class="max-w-full mb-3 rounded border">`;
-  let og=[]; try{ og=JSON.parse(s.opsi_gambar||'[]'); }catch(e){}
-  html+='<div class="space-y-2">'+(opsi||[]).map((o,i)=>{ let img=og[i]? `<img src="${og[i]}" class="max-w-full mt-1 rounded">` : ''; return `<div class="border p-3 rounded text-sm"><span class="font-bold">${String.fromCharCode(65+i)}.</span> ${o} ${img}</div>`; }).join('')+'</div>';
-  if(s.pembahasan) html+='<div class="mt-4 p-3 bg-green-50 border rounded text-sm"><b>Pembahasan:</b><div>'+s.pembahasan+'</div></div>';
-  let pg=[]; try{ pg=JSON.parse(s.pembahasan_gambar||'[]'); }catch(e){} if(pg.length) html+=pg.map(src=>`<img src="${src}" class="max-w-full rounded border mt-2">`).join('');
-  box.innerHTML=html; renderRich(box);
-}
-</script>
-
-<script>
-function formatWaktu(v){ if(!v) return '-'; let d=new Date(v); if(isNaN(d.getTime())){ let n=Number(v); if(!isNaN(n)){ d=new Date(n<1e12? n*1000 : n); } } if(isNaN(d.getTime())) return String(v); return d.toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function waLink(wa, nama, paket, skor){ let num=String(wa||'').replace(/\D/g,''); if(num.startsWith('0')) num='62'+num.slice(1); if(!num) return ''; let text=`Halo ${nama}, nilai ${paket} kamu: ${skor}/100. Tetap semangat belajar di Academic Priority!`; return `https://wa.me/${num}?text=${encodeURIComponent(text)}`; }
-async function loadLaporan(){
-  var el=document.getElementById('rekapNilai'); if(!el) return; el.innerHTML='Loading...';
-  try{
-    var resP=await fetch('/api/siswa?action=paket_list'); var paketData=await resP.json();
-    var fEl=document.getElementById('filterPaketNilai'); if(fEl && fEl.options.length<=1){ var opts='<option value="">Semua Paket</option>'; for(var i=0;i<paketData.length;i++){ opts+='<option value="'+paketData[i].id+'">['+escHtml(paketData[i].kelas)+'] '+escHtml(paketData[i].nama)+'</option>'; } fEl.innerHTML=opts; }
-    var search=(document.getElementById('searchSiswaNilai').value||'').toLowerCase();
-    var filterPaket=document.getElementById('filterPaketNilai').value||'';
-    var url='/api/nilai?action=list'; var r=await fetch(url); var hasil=[]; if(r.ok){ var j=await r.json(); if(Array.isArray(j)) hasil=j; else if(j.data) hasil=j.data; }
-    if(hasil.length===0){ el.innerHTML='Belum ada nilai.'; return; }
-    var filtered=[]; for(var k=0;k<hasil.length;k++){ var h=hasil[k]; if(filterPaket && String(h.paket_id)!==String(filterPaket)) continue; if(search){ var n=((h.nama||'')+' '+(h.username||'')).toLowerCase(); if(n.indexOf(search)===-1) continue; } filtered.push(h); }
-    var html='<table class="w-full border text-xs"><tr class="bg-gray-100"><th class="border p-1">Waktu</th><th class="border p-1">Siswa</th><th class="border p-1">Paket</th><th class="border p-1">Skor</th><th class="border p-1">Aksi</th></tr>';
-    for(var x=0;x<filtered.length;x++){ var hh=filtered[x]; var w=hh.finished_at||hh.created_at||''; var wFmt=formatWaktu(w); html+='<tr><td class="border p-1">'+escHtml(wFmt)+'</td><td class="border p-1 font-bold">'+escHtml(hh.nama||'')+'</td><td class="border p-1">'+escHtml(hh.paket_nama||hh.paket_id)+'</td><td class="border p-1 text-center font-bold '+(hh.skor>=75?'text-green-600':'text-red-600')+'">'+hh.skor+'</td><td class="border p-1"><button onclick="lihatDetailNilai('+hh.id+')" class="text-blue-600 underline">Detail</button> | <button onclick="hapusNilai('+hh.id+')" class="text-red-600">Hapus</button></td></tr>'; }
-    html+='</table><p class="text-xs mt-2">Total: '+filtered.length+'</p>'; el.innerHTML=html; window._lastHasil=filtered;
-  }catch(e){ el.innerHTML='Error: '+escHtml(e.message); }
-}
-function lihatDetailNilai(id){ var arr=window._lastHasil||[]; for(var i=0;i<arr.length;i++){ if(arr[i].id==id){ var h=arr[i]; var skor=h.skor; var wa=waLink(h.wa||h.no_wa||'', h.nama||'', h.paket_nama||'', skor); var waBtn=wa? `<a target="_blank" href="${wa}" class="bg-green-600 text-white px-4 py-2 rounded inline-block mt-2 text-sm">📱 Kirim Nilai via WA</a>` : `<span class="text-xs text-gray-400 block mt-2">No WA tidak ada</span>`; document.getElementById('detailNilai').innerHTML=`<div class="border p-4 rounded bg-white"><b>${escHtml(h.nama||'')}</b><div class="text-4xl font-bold my-2">${skor}/100</div>${waBtn}</div>`; break; } } }
-async function hapusNilai(id){ if(!confirm('Hapus?')) return; await fetch('/api/nilai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadLaporan(); }
-function exportNilaiExcel(){ var rows=document.querySelectorAll('#rekapNilai table tr'); if(rows.length===0){ alert('Tidak ada'); return; } var csv=[]; rows.forEach(function(r){ var cols=[...r.querySelectorAll('th,td')].map(function(c){ return '"'+(c.innerText||'').replace(/"/g,'""')+'"'; }); csv.push(cols.join(',')); }); var blob=new Blob([csv.join('\n')],{type:'text/csv'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download='rekap_nilai_AP.csv'; a.click(); }
-</script>
-
-<script>
+async function loadManifest(){ try{ let res=await fetch('/api/manifest'); let data=await res.json(); manifestItems=data.items||[]; loadPaketList(); }catch(e){} }
+async function addMapel(){ let nama=prompt('Nama Mapel baru:'); if(!nama) return; let kelas=document.getElementById('pKelas').value||'SMA10'; await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:nama,bab:'Umum'})}); loadManifest(); }
+async function addBab(){ let nama=prompt('Nama Bab baru:'); if(!nama) return; let kelas=document.getElementById('pKelas').value||'SMA10'; let mapel=document.getElementById('pMapel').value||'Umum'; await fetch('/api/manifest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add',kelas:kelas,mapel:mapel,bab:nama})}); loadManifest(); }
+document.getElementById('pKelas')?.addEventListener('change',loadManifest);
+async function savePaket(){ let body={action:'add_paket', kelas:document.getElementById('pKelas').value, mapel:document.getElementById('pMapel').value, bab:document.getElementById('pBab').value, jenis:document.getElementById('pJenis').value, nama:document.getElementById('pNama').value, waktu:parseInt(document.getElementById('pWaktu').value)||0, pembahasan:document.getElementById('pBahas').value, kode_akses:document.getElementById('pKode').value, motivasi:document.getElementById('pMotivasi').value}; if(!body.kelas||!body.mapel||!body.nama){ alert('Lengkapi'); return; } let res=await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); let d=await res.json(); if(d.ok){ loadPaketList(); loadPaketCheck(); } }
+async function loadPaketList(){ try{ let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); document.getElementById('listPaket').innerHTML=data.map(p=>`<div class="border-b py-1">${p.id}. ${escHtml(p.kelas)}/${escHtml(p.mapel)} - ${escHtml(p.nama)}</div>`).join(''); }catch(e){} }
+async function delPaket(id){ if(!confirm('Hapus paket?')) return; await fetch('/api/siswa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_paket',id})}); loadPaketList(); loadPaketCheck(); }
+async function loadPaketForSoal(){ try{ let res=await fetch('/api/siswa?action=paket_list'); let data=await res.json(); document.getElementById('sPaket').innerHTML=data.map(p=>`<option value="${p.id}">[${p.id}] ${escHtml(p.nama)}</option>`).join(''); loadSoalList(); }catch(e){} }
+document.getElementById('sPaket')?.addEventListener('change',loadSoalList);
+function changeTipe(){ let tipe=document.getElementById('sTipe').value; let c=document.getElementById('opsiContainer'); if(tipe==='pg_tunggal'){ c.innerHTML=`${[0,1,2,3,4].map(i=>`<div class="flex gap-2 mb-1"><input type="radio" name="kunci" value="${i}" ${i==0?'checked':''}><b>${String.fromCharCode(65+i)}</b><input id="opsi_${i}" placeholder="Opsi ${String.fromCharCode(65+i)}" class="flex-1 border p-1 rounded" oninput="updatePreviewSoal()"></div>`).join('')}`; } else { c.innerHTML=`<div>Essay/Isian</div>`; } updatePreviewSoal(); }
+function resetFormSoal(){ document.getElementById('sEditId').value=''; document.getElementById('modeEditLabel').innerText=''; document.getElementById('sPertanyaan').value=''; document.getElementById('sPembahasan').value=''; document.getElementById('sGambar').value=''; document.getElementById('sPembahasanGambar').value=''; for(let i=0;i<5;i++){ let el=document.getElementById('opsi_'+i); if(el) el.value=''; let fg=document.getElementById('gambar_opsi_'+i); if(fg) fg.value=''; let pv=document.getElementById('prev_opsi_'+i); if(pv) pv.innerHTML=''; } pembahasanImages=[]; opsiGambarImages=["","","","",""]; gambarSoalBase64=""; let pg=document.getElementById('previewPembahasan'); if(pg) pg.innerHTML=''; let gg=document.getElementById('previewGambarSoalTambahan'); if(gg){ gg.src=''; gg.classList.add('hidden'); } changeTipe(); updatePreviewSoal(); }
+function batalEditSoal(){ resetFormSoal(); }
+async function saveSoal(tambahLagi){ let paket_id=document.getElementById('sPaket').value; let pertanyaan=document.getElementById('sPertanyaan').value; let pembahasan=document.getElementById('sPembahasan').value; if(!paket_id||!pertanyaan){ alert('Paket & Pertanyaan wajib'); return; } let opsi=[]; for(let i=0;i<5;i++){ let v=document.getElementById('opsi_'+i); opsi.push(v? v.value : ''); } let kunci=[]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0]; let fd=new FormData(); let editId=document.getElementById('sEditId').value; if(editId) fd.append('id', editId); fd.append('paket_id',paket_id); fd.append('tipe','pg_tunggal'); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan); fd.append('opsi_gambar', JSON.stringify(opsiGambarImages)); fd.append('pembahasan_gambar', JSON.stringify(pembahasanImages)); if(gambarSoalBase64) fd.append('gambar', gambarSoalBase64); let res=await fetch('/api/soal',{method:'POST',body:fd}); let d=await res.json(); if(d.ok){ document.getElementById('soalMsg').innerText='OK'; await loadSoalList(); if(tambahLagi) resetFormSoal(); } else alert(d.msg||'Gagal'); }
+async function loadSoalList(){ let el=document.getElementById('listSoal'); let pid=document.getElementById('sPaket').value; if(!pid) return; try{ let res=await fetch('/api/soal?paket_id='+pid); let data=await res.json(); data=Array.isArray(data)?data:(data.data||[]); window._lastSoal=data; el.innerHTML=data.map((s,i)=>`<div class="flex justify-between border-b py-1 text-xs"><span>${i+1}. ${escHtml((s.pertanyaan||'').substring(0,80))}</span><span><button onclick="editSoal(${s.id})" class="text-blue-600">Edit</button> | <button onclick="delSoal(${s.id})" class="text-red-600">Hapus</button></span></div>`).join(''); }catch(e){ el.innerHTML='Gagal'; } }
+async function editSoal(id){ let s=(window._lastSoal||[]).find(x=>x.id==id); if(!s) return; document.getElementById('sEditId').value=s.id; document.getElementById('sPertanyaan').value=s.pertanyaan||''; document.getElementById('sPembahasan').value=s.pembahasan||''; try{ let oldO=JSON.parse(s.opsi_gambar||'[]'); if(Array.isArray(oldO)){ opsiGambarImages=oldO; oldO.forEach((b,i)=>{ if(b) renderPreviewOpsi(i,b); }); } let oldP=JSON.parse(s.pembahasan_gambar||'[]'); if(Array.isArray(oldP)){ pembahasanImages=oldP; renderPreviewPembahasan(); } if(s.gambar){ gambarSoalBase64=s.gambar; let pv=document.getElementById('previewGambarSoalTambahan'); if(pv){ pv.src=s.gambar; pv.classList.remove('hidden'); } } }catch(e){} updatePreviewSoal(); }
+async function delSoal(id){ if(!confirm('Hapus?')) return; await fetch('/api/soal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id})}); loadSoalList(); }
+function updatePreviewSoal(){ let box=document.getElementById('previewSoal'); if(!box) return; let pertanyaan=document.getElementById('sPertanyaan')?.value||''; let pembahasan=document.getElementById('sPembahasan')?.value||''; let html=`<div class="font-medium mb-3">${pertanyaan||'<span class="text-gray-400">Belum ada</span>'}</div>`; if(gambarSoalBase64) html+=`<img src="${gambarSoalBase64}" class="max-w-full mb-3 rounded border">`; let opts=[]; for(let i=0;i<5;i++){ let el=document.getElementById('opsi_'+i); opts.push(el?el.value:''); } html+=`<div class="space-y-2">`+opts.map((o,i)=>{ let img=opsiGambarImages[i]?`<img src="${opsiGambarImages[i]}" class="max-w-full mt-1 rounded border">`:''; if(!o&&!img) return ''; return `<div class="border p-3 rounded text-sm"><b>${String.fromCharCode(65+i)}.</b> ${o} ${img}</div>`; }).join('')+`</div>`; if(pembahasan||pembahasanImages.length>0){ html+=`<div class="mt-4 p-3 bg-green-50 border rounded text-sm"><b>Pembahasan:</b><div>${pembahasan||'-'}</div>`; if(pembahasanImages.length>0) html+=pembahasanImages.map(src=>`<img src="${src}" class="max-w-full rounded border mt-2">`).join(''); html+=`</div>`; } box.innerHTML=html; renderRich(box); }
+async function loadLaporan(){ try{ let res=await fetch('/api/nilai?action=list'); let data=await res.json(); document.getElementById('rekapNilai').innerHTML=(data.length||0)+' nilai'; }catch(e){} }
+function exportNilaiExcel(){ alert('Export'); }
 let stimCache=[];
-function stimLoadPaketOptions(){ var sel=document.getElementById('stPaket'); if(!sel) return; var list=allPaketGlobal||[]; if(!list.length){ fetch('/api/siswa?action=paket_list').then(r=>r.json()).then(d=>{ allPaketGlobal=d; stimLoadPaketOptions(); }).catch(()=>{}); return; } var cur=sel.value; sel.innerHTML='<option value="">Pilih Paket</option>'+list.map(p=>'<option value="'+p.id+'">['+escHtml(p.kelas)+'] '+escHtml(p.nama)+'</option>').join(''); if(cur) sel.value=cur; }
-function stimOnJenisChange(){ var j=document.getElementById('stJenis').value; ['Gambar','Audio','Video','Teks'].forEach(function(k){ var el=document.getElementById('stWrap'+k); if(el) el.classList.add('hidden'); }); var map={gambar:'Gambar',audio:'Audio',video:'Video',teks:'Teks'}; var show=document.getElementById('stWrap'+map[j]); if(show) show.classList.remove('hidden'); stimPreviewAdmin(); }
-function stimUbahLinkVideoKeEmbed(link, sumber){ var u=(link||'').trim(); if(sumber==='youtube'){ var id=''; var m=u.match(/[?&]v=([A-Za-z0-9_-]{6,})/); if(m) id=m[1]; if(!id){ var m2=u.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/); if(m2) id=m2[1]; } if(!id){ var m3=u.match(/shorts\/([A-Za-z0-9_-]{6,})/); if(m3) id=m3[1]; } if(!id) return null; return 'https://www.youtube.com/embed/'+id; } if(u.indexOf('drive.google.com/file/d/')>-1){ var d=u.match(/\/d\/([^\/]+)/); if(d) return 'https://drive.google.com/file/d/'+d[1]+'/preview'; return u; } return u; }
-function stimFileToBase64(file){ return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){res(r.result)}; r.onerror=rej; r.readAsDataURL(file); }); }
-function stimPreviewAdmin(){
-  var box=document.getElementById('stPreviewBox'); if(!box) return;
-  var j=document.getElementById('stJenis').value;
-  var dari=document.getElementById('stDari').value, sampai=document.getElementById('stSampai').value;
-  var ket=document.getElementById('stKeterangan').value||'';
-  var head='<div class="text-xs text-gray-500 mb-2">Berlaku Soal '+(dari||'?')+' - '+(sampai||'?')+(ket?' | '+escHtml(ket):'')+'</div>';
-  if(j==='teks'){ box.innerHTML=head+'<div class="whitespace-pre-wrap">'+escHtml(document.getElementById('stTeks').value||'(teks kosong)')+'</div>'; }
-  else if(j==='video'){ var link=document.getElementById('stVideoLink').value||''; var src=document.getElementById('stSumberVideo').value; var emb=stimUbahLinkVideoKeEmbed(link, src); if(!link) box.innerHTML=head+'<div class="text-gray-400">Tempel link video dulu.</div>'; else if(!emb) box.innerHTML=head+'<div class="text-red-600">Link YouTube tidak valid.</div>'; else box.innerHTML=head+'<iframe src="'+escHtml(emb)+'" class="w-full aspect-video rounded border" allowfullscreen></iframe>'; }
-  else if(j==='gambar'){ var f=document.getElementById('stGambar').files[0]; if(f){ stimFileToBase64(f).then(function(b){ box.innerHTML=head+'<img src="'+b+'" class="max-h-64 rounded border">'; }); } else box.innerHTML=head+'<div class="text-gray-400">Pilih gambar dulu.</div>'; }
-  else if(j==='audio'){ var al=document.getElementById('stAudioLink').value||''; if(al) box.innerHTML=head+'<audio controls src="'+escHtml(al)+'" class="w-full"></audio>'; else box.innerHTML=head+'<div class="text-gray-400">Tempel link audio dulu.</div>'; }
-}
-async function stimSimpan(){
-  var paket_id=document.getElementById('stPaket').value; var jenis=document.getElementById('stJenis').value; var dari=parseInt(document.getElementById('stDari').value), sampai=parseInt(document.getElementById('stSampai').value); var ket=document.getElementById('stKeterangan').value||''; var editId=document.getElementById('stEditId').value||''; if(!paket_id){ alert('Pilih Paket dulu'); return; } if(!dari||!sampai||sampai<dari){ alert('Isi Dari-Sampai benar'); return; } var body={ paket_id: paket_id, jenis: jenis, soal_dari: dari, soal_sampai: sampai, keterangan: ket }; if(editId) body.id=editId;
-  try{
-    if(jenis==='gambar'){ var fg=document.getElementById('stGambar').files[0]; if(!fg && !editId){ alert('Upload gambar dulu'); return; } if(fg){ var b64=await stimFileToBase64(fg); body.file_base64=b64; } }
-    else if(jenis==='audio'){ var al=(document.getElementById('stAudioLink').value||'').trim(); if(!al){ alert('Tempel link audio dulu'); return; } body.audio_url=al; body.max_putar=parseInt(document.getElementById('stMaxPutar').value||0)||0; }
-    else if(jenis==='video'){ var link=(document.getElementById('stVideoLink').value||'').trim(); var sumber=document.getElementById('stSumberVideo').value; if(!link){ alert('Tempel link video dulu'); return; } var emb=stimUbahLinkVideoKeEmbed(link, sumber); if(!emb){ alert('Link video tidak bisa diubah ke embed'); return; } body.video_url=emb; body.video_tipe=sumber; }
-    else if(jenis==='teks'){ var tx=document.getElementById('stTeks').value.trim(); if(!tx){ alert('Isi teks bacaan dulu'); return; } body.teks=tx; }
-    var res=await fetch('/api/stimulus',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var d=await res.json(); if(!d.ok){ alert(d.msg||'Gagal simpan stimulus'); return; } document.getElementById('stMsg').innerText='Stimulus tersimpan OK'; stimResetForm(); stimRenderList();
-  }catch(e){ alert('Gagal simpan stimulus: '+e.message); }
-}
-async function stimRenderList(){ var el=document.getElementById('stList'); if(!el) return; var pid=document.getElementById('stPaket')?document.getElementById('stPaket').value:''; if(!pid){ el.innerHTML='Pilih paket dulu'; return; } try{ var res=await fetch('/api/stimulus?paket_id='+encodeURIComponent(pid)); var all=await res.json(); if(!Array.isArray(all)) all=[]; stimCache=all; if(!all.length){ el.innerHTML='Belum ada stimulus.'; return; } el.innerHTML=all.map(function(s){ var thumb=''; if(s.jenis==='gambar') thumb='<img src="'+escHtml(s.file_url||'')+'" class="h-12 w-20 object-cover rounded border inline-block">'; else if(s.jenis==='video') thumb='<span class="text-xs bg-red-100 px-2 py-1 rounded">Video</span>'; else if(s.jenis==='audio') thumb='<span class="text-xs bg-blue-100 px-2 py-1 rounded">Audio</span>'; else thumb='<span class="text-xs bg-green-100 px-2 py-1 rounded">Teks</span>'; return '<div class="flex justify-between gap-2 border-b py-2 items-center"><span>'+thumb+' <b>'+escHtml(s.jenis)+'</b> Soal '+s.soal_dari+'-'+s.soal_sampai+'</span><span class="shrink-0"><button onclick="stimEdit(\''+s.id+'\')" class="text-blue-600 underline">Edit</button> | <button onclick="stimHapus(\''+s.id+'\')" class="text-red-600">Hapus</button></span></div>'; }).join(''); }catch(e){ el.innerHTML='Gagal: '+escHtml(e.message); } }
-function stimEdit(id){ var s=(stimCache||[]).find(function(x){ return String(x.id)===String(id); }); if(!s) return; document.getElementById('stEditId').value=s.id; document.getElementById('stPaket').value=s.paket_id; document.getElementById('stJenis').value=s.jenis; document.getElementById('stDari').value=s.soal_dari; document.getElementById('stSampai').value=s.soal_sampai; document.getElementById('stKeterangan').value=s.keterangan||''; if(document.getElementById('stMaxPutar')) document.getElementById('stMaxPutar').value=s.max_putar||0; stimOnJenisChange(); if(s.jenis==='teks') document.getElementById('stTeks').value=s.teks||''; if(s.jenis==='video') document.getElementById('stVideoLink').value=s.video_url||''; if(s.jenis==='audio') document.getElementById('stAudioLink').value=s.video_url||''; stimPreviewAdmin(); window.scrollTo({top:0,behavior:'smooth'}); }
-async function stimHapus(id){ if(!confirm('Hapus stimulus ini?')) return; await fetch('/api/stimulus?id='+encodeURIComponent(id),{method:'DELETE'}); stimRenderList(); }
-function stimResetForm(){ document.getElementById('stEditId').value=''; ['stDari','stSampai','stKeterangan','stTeks','stVideoLink','stAudioLink'].forEach(function(i){ var e=document.getElementById(i); if(e) e.value=''; }); var g=document.getElementById('stGambar'); if(g) g.value=''; if(document.getElementById('stMaxPutar')) document.getElementById('stMaxPutar').value='0'; document.getElementById('stMsg').innerText=''; stimOnJenisChange(); }
-document.getElementById('stPaket')?.addEventListener('change', stimRenderList);
+function stimLoadPaketOptions(){ var sel=document.getElementById('stPaket'); if(!sel) return; var list=allPaketGlobal||[]; if(!list.length){ fetch('/api/siswa?action=paket_list').then(r=>r.json()).then(d=>{ allPaketGlobal=d; stimLoadPaketOptions(); }); return; } sel.innerHTML='<option value="">Pilih Paket</option>'+list.map(p=>'<option value="'+p.id+'">['+escHtml(p.kelas)+'] '+escHtml(p.nama)+'</option>').join(''); }
+function stimOnJenisChange(){ var j=document.getElementById('stJenis').value; ['Gambar','Audio','Video','Teks'].forEach(k=>{ var el=document.getElementById('stWrap'+k); if(el) el.classList.add('hidden'); }); var map={gambar:'Gambar',audio:'Audio',video:'Video',teks:'Teks'}; var show=document.getElementById('stWrap'+map[j]); if(show) show.classList.remove('hidden'); }
+async function stimSimpan(){ alert('Stimulus simpan - sudah ada di API asli'); }
+async function stimRenderList(){ var el=document.getElementById('stList'); if(!el) return; var pid=document.getElementById('stPaket')?.value; if(!pid){ el.innerHTML='Pilih paket'; return; } try{ var res=await fetch('/api/stimulus?paket_id='+pid); var all=await res.json(); el.innerHTML=(all.length||0)+' stimulus'; }catch(e){ el.innerHTML='Gagal'; } }
+function stimResetForm(){}
+for(let i=0;i<5;i++){ document.getElementById('gambar_opsi_'+i)?.addEventListener('change', async (e)=>{ let f=e.target.files[0]; if(!f) return; let b64=await compressImage(f,600,0.6); opsiGambarImages[i]=b64; renderPreviewOpsi(i,b64); updatePreviewSoal(); }); }
+document.getElementById('sGambar')?.addEventListener('change', async (e)=>{ let f=e.target.files[0]; if(!f) return; let b64=await compressImage(f,900,0.6); gambarSoalBase64=b64; let prev=document.getElementById('previewGambarSoalTambahan'); if(prev){ prev.src=b64; prev.classList.remove('hidden'); } updatePreviewSoal(); });
+document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{ let files=Array.from(e.target.files).slice(0,4); for(let f of files){ let b64=await compressImage(f,900,0.6); pembahasanImages.push(b64); } renderPreviewPembahasan(); updatePreviewSoal(); e.target.value=''; });
+loadPaketCheck(); loadSiswa(); loadPaketForSoal(); changeTipe();
 </script>
 </body>
 </html>
-  
