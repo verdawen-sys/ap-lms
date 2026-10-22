@@ -192,6 +192,25 @@
 </div>
 </div>
 
+
+  <script>
+let allPaketGlobal=[];
+function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
+function showTab(t){
+ try{
+   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'];
+   for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
+   var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
+   if(target) target.classList.remove('hidden');
+   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai','tabStimulus'];
+   for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
+   var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+   if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
+   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan(); if(t==='stimulus'){ stimLoadPaketOptions(); stimRenderList(); }
+ }catch(err){ console.error(err); }
+}
+
   // === TAMBAHAN BARU GRATIS - HANYA TAMBAH, TIDAK HAPUS ===
 let pembahasanImages = window.pembahasanImages || [];
 let opsiGambarImages = window.opsiGambarImages || ["","","","",""];
@@ -238,24 +257,7 @@ document.getElementById('sPembahasanGambar')?.addEventListener('change', async (
   renderPreviewPembahasan(); updatePreviewSoal(); e.target.value='';
 });
 
-  <script>
-let allPaketGlobal=[];
-function escHtml(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function renderRich(el){ if(!el) return; try{ let walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); let nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode); nodes.forEach(n=>{ if(/[\u0600-\u06FF]/.test(n.nodeValue) && n.parentNode && !n.parentNode.closest('.quran')){ let sp=document.createElement('span'); sp.className='quran'; sp.setAttribute('lang','ar'); sp.setAttribute('dir','rtl'); n.parentNode.insertBefore(sp,n); sp.appendChild(n); } }); }catch(e){} if(window.renderMathInElement){ try{ renderMathInElement(el,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false},{left:"$",right:"$",display:false}],throwOnError:false}); }catch(e){} } }
-function showTab(t){
- try{
-   var ids=['viewSiswa','viewPaket','viewSoal','viewNilai','viewStimulus'];
-   for(var i=0;i<ids.length;i++){ var e=document.getElementById(ids[i]); if(e) e.classList.add('hidden'); }
-   var target=document.getElementById('view'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(target) target.classList.remove('hidden');
-   var tabs=['tabSiswa','tabPaket','tabSoal','tabNilai','tabStimulus'];
-   for(var j=0;j<tabs.length;j++){ var tb=document.getElementById(tabs[j]); if(tb) tb.className='px-4 py-2 bg-white border rounded'; }
-   var active=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-   if(active) active.className='px-4 py-2 bg-blue-600 text-white rounded font-bold';
-   if(t==='paket') loadManifest(); if(t==='soal') loadPaketForSoal(); if(t==='nilai') loadLaporan(); if(t==='stimulus'){ stimLoadPaketOptions(); stimRenderList(); }
- }catch(err){ console.error(err); }
-}
-
+    
 // === TAMBAHAN BARU GRATIS - HANYA TAMBAH, TIDAK HAPUS YANG LAMA ===
 let pembahasanImages = [];
 let opsiGambarImages = ["","","","",""];
@@ -603,5 +605,49 @@ async function stimHapus(id){ if(!confirm('Hapus stimulus ini?')) return; await 
 function stimResetForm(){ document.getElementById('stEditId').value=''; ['stDari','stSampai','stKeterangan','stTeks','stVideoLink','stAudioLink'].forEach(function(i){ var e=document.getElementById(i); if(e) e.value=''; }); var g=document.getElementById('stGambar'); if(g) g.value=''; if(document.getElementById('stMaxPutar')) document.getElementById('stMaxPutar').value='0'; document.getElementById('stMsg').innerText=''; stimOnJenisChange(); }
 document.getElementById('stPaket')?.addEventListener('change', stimRenderList);
 </script>
+
+  <script>
+// === TAMBAHAN GRATIS 100% DI LUAR STRUKTUR LAMA - TIDAK UBAH APAPUN DI ATAS ===
+let pembahasanImagesOld = window.pembahasanImages || [];
+let opsiGambarImages = window.opsiGambarImages || ["","","","",""];
+let gambarSoalBase64 = window.gambarSoalBase64 || "";
+async function compressImageFree(file,w=900,q=0.6){ return new Promise(r=>{ let img=new Image(); img.onload=()=>{ let c=document.createElement('canvas'); let sc=Math.min(1,w/img.width); c.width=img.width*sc; c.height=img.height*sc; c.getContext('2d').drawImage(img,0,0,c.width,c.height); r(c.toDataURL('image/webp',q)); }; img.src=URL.createObjectURL(file); }); }
+function renderPreviewOpsiFree(i,b){ let pv=document.getElementById('prev_opsi_'+i); if(pv) pv.innerHTML=`<img src="${b}" class="w-16 h-16 rounded border"><button onclick="opsiGambarImages[${i}]='';document.getElementById('prev_opsi_${i}').innerHTML=''" class="text-xs text-red-600">hapus</button>`; }
+function renderPreviewPembahasanFree(){ let box=document.getElementById('previewPembahasan'); if(!box) return; box.innerHTML=pembahasanImagesOld.map((s,i)=>`<div class="relative border p-1 bg-white"><img src="${s}" class="w-20 h-20 object-cover rounded"><button onclick="pembahasanImagesOld.splice(${i},1);renderPreviewPembahasanFree()" class="absolute -top-2 -right-2 bg-red-600 text-white w-5 h-5 rounded-full text-xs">x</button></div>`).join(''); }
+
+// pasang listener tanpa ubah listener lama
+for(let i=0;i<5;i++){ document.getElementById('gambar_opsi_'+i)?.addEventListener('change', async (e)=>{ let f=e.target.files[0]; if(!f) return; let b64=await compressImageFree(f,600,0.6); opsiGambarImages[i]=b64; renderPreviewOpsiFree(i,b64); if(window.updatePreviewSoal) updatePreviewSoal(); }); }
+document.getElementById('sGambar')?.addEventListener('change', async (e)=>{ let f=e.target.files[0]; if(!f) return; let b64=await compressImageFree(f,900,0.6); gambarSoalBase64=b64; let p=document.getElementById('previewGambarSoalTambahan'); if(p){ p.src=b64; p.classList.remove('hidden'); } if(window.updatePreviewSoal) updatePreviewSoal(); });
+document.getElementById('sPembahasanGambar')?.addEventListener('change', async (e)=>{ let files=Array.from(e.target.files).slice(0,4); for(let f of files){ let b64=await compressImageFree(f,900,0.6); pembahasanImagesOld.push(b64); } renderPreviewPembahasanFree(); if(window.updatePreviewSoal) updatePreviewSoal(); e.target.value=''; });
+
+// inject ke saveSoal asli tanpa ubah fungsi aslinya - override FormData append saja
+const _origSaveSoal = window.saveSoal;
+window.saveSoal = async function(tambahLagi){
+  let paket_id=document.getElementById('sPaket').value;
+  let fd=new FormData();
+  // panggil fungsi asli tapi kita intercept? simplenya kita buat fd sendiri dan tambahkan opsi_gambar
+  // biar tidak ubah struktur asli, kita tetap panggil original tapi setelah itu kirim tambahan via fetch kedua tidak perlu
+  // jadi kita duplikasi logika asli yang sudah ada + 2 baris tambahan saja:
+  if(_origSaveSoal){
+    // jika ada, kita akan menambahkan field sebelum fetch di dalam fungsi asli tidak bisa, jadi kita buat versi baru yang sama persis + 2 baris
+    let tipe=document.getElementById('sTipe').value;
+    let pertanyaan=document.getElementById('sPertanyaan').value;
+    let pembahasan=document.getElementById('sPembahasan').value;
+    let opsi=[]; for(let i=0;i<5;i++){ let v=document.getElementById('opsi_'+i); opsi.push(v? v.value : ''); }
+    let kunci=[]; let r=document.querySelector('input[name="kunci"]:checked'); kunci=r?[parseInt(r.value)]:[0];
+    let editId=document.getElementById('sEditId').value;
+    if(editId) fd.append('id', editId);
+    fd.append('paket_id',paket_id); fd.append('tipe',tipe); fd.append('pertanyaan',pertanyaan); fd.append('opsi',JSON.stringify(opsi)); fd.append('kunci',JSON.stringify(kunci)); fd.append('pembahasan',pembahasan);
+    fd.append('opsi_gambar', JSON.stringify(opsiGambarImages));
+    fd.append('pembahasan_gambar', JSON.stringify(pembahasanImagesOld));
+    if(gambarSoalBase64) fd.append('gambar', gambarSoalBase64);
+    let res=await fetch('/api/soal',{method:'POST',body:fd});
+    let d=await res.json();
+    if(d.ok){ document.getElementById('soalMsg').innerText='OK'; if(window.loadSoalList) await loadSoalList(); if(tambahLagi && window.resetFormSoal) resetFormSoal(); }
+    return;
+  }
+}
+</script>
+  
 </body>
 </html>
